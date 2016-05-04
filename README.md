@@ -6,3 +6,4 @@ A Web-based tree viewer. Generating SVG from Newick or dynamically.
 * base class Node
 * derived class Leaf
 * usable plugin mechanism for Node (Leaf)
+* newick parser
