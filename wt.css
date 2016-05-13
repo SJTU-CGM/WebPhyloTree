@@ -1,0 +1,10 @@
+svg {
+    stroke: black;
+}
+
+rect {
+    fill: white;
+}
+rect.selected {
+    fill: yellow;
+}

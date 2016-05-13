@@ -24,13 +24,11 @@ var SvgHelper = (function(){
 	    }
 	    return str;
 	},
-	append: function (parent, _children) {
+	append: function (parent, child) {
 	    if (parent == undefined) {
-		SH.error("append", "parent undefined", slice(arguments, 1));
+		SH.error("append", "parent undefined", child);
 	    } else {
-		for (var child of slice(arguments, 1)) {
-		    parent.appendChild(child);
-		}
+		parent.appendChild(child);
 	    }
 	},
 	query: function(elem, selector) {
@@ -54,6 +52,9 @@ var SvgHelper = (function(){
 		elem.setAttributeNS(null, attr, val);
 	    }
 	    return elem;
+	},
+	bind: function (elem, type, listener) {
+	    elem.addEventListener(type, listener);
 	},
 	text: function (txt) {
 	    var elem = SH.create("text");
@@ -80,6 +81,17 @@ var SvgHelper = (function(){
 	    }
 	    return elem;
 	},
+	rect: function (x, y, width, height, rx, ry) {
+	    var elem = SH.create('rect', {
+		'x': x || 0,
+		'y': y || 0,
+		'width': width || 0,
+		'height': height || 0,
+		'rx': rx || 0,
+		'ry': ry || 0,
+	    });
+	    return elem;
+	},
 	line: function (x1, y1, x2, y2) {
 	    var elem = SH.create('line', {
 		'x1': x1 || 0,
@@ -87,6 +99,10 @@ var SvgHelper = (function(){
 		'x2': x2 || 0,
 		'y2': y2 || 0,
 	    })
+	    return elem;
+	},
+	path: function () {
+	    var elem = SH.create('path');
 	    return elem;
 	},
 	circle: function (cx, cy, r) {

@@ -9,6 +9,9 @@ var WebTree = (function(){
     function log() {
 	console.log.apply(null, arguments)
     }
+    function apply(func, arr) {
+	func.apply(null, arr);
+    }
     function dfs(node, func) {
 	if (node.is_node) {
 	    for (var child of node.children) {
@@ -16,6 +19,15 @@ var WebTree = (function(){
 	    }
 	}
 	func(node);
+    }
+    function bfs(queue, func) {
+	while (queue.length > 0) {
+	    var node = queue.shift();
+	    func(node);
+	    for (var child of node.children) {
+		queue.push(child);
+	    }
+	}
     }
     // Node constructor
     function Node(name, data) {
@@ -28,7 +40,6 @@ var WebTree = (function(){
     Node.prototype = {
 	is_node: true, is_leaf: false,
 	appendChild: function(child) {
-	    console.log(this);
 	    this.children.push(child);
 	    child.parent = this;
 	}
@@ -56,15 +67,18 @@ var WebTree = (function(){
     // elements
     function addPackingElements(node) {
 	var caps = SvgHelper.g();
+	var core = SvgHelper.g();
 	var body = SvgHelper.g();
+	SvgHelper.append(caps, core);
 	SvgHelper.append(caps, body);
 	node.elements = {
 	    "capsule": caps,
-	    "body": body
+	    "core": core,
+	    "body": body,
 	}
     }
     function addBranchLineElement(node) {
-	var brch = SvgHelper.line();
+	var brch = SvgHelper.path();
 	var brchGroup = SvgHelper.g();
 	SvgHelper.append(brchGroup, brch);
 	SvgHelper.append(node.elements["capsule"], brchGroup);
@@ -74,14 +88,9 @@ var WebTree = (function(){
 	})
     }
     function addVBranchLineElement(node) {
-	var vbrch = SvgHelper.line();
+	var vbrch = SvgHelper.path();
 	SvgHelper.append(node.elements["branch_group"], vbrch);
 	node.elements["vbranch_line"] = vbrch;
-    }
-    function addLabel(node) {
-	var label = SvgHelper.text(node.name);
-	SvgHelper.append(node.elements["body"], label);
-	node.elements["label"] = label;
     }
     function addStandardElements(node) {
 	addPackingElements(node);
@@ -91,79 +100,159 @@ var WebTree = (function(){
 
 
     
-    // style
-    function addStyle(node) {
+    function viewerSupport(node, config) {
 	node.style = {
 	    "branch_unit": 32,
+	};
+	node.layout = {};
+    }
+    function dynamicViewerSupport(node, config) {
+	viewerSupport(node, config);
+	node.operations = {};
+	node.attributes = {};
+    }
+
+
+
+    // @widget
+    var widget = {
+	label: function (node, config) {
+	    var label = SvgHelper.text(node.name);
+	    SvgHelper.append(node.elements["core"], label);
+	    node.elements["label"] = label;
+	},
+	labelButton: function(node, config) {
+	    var labelBtn = SvgHelper.rect(0, -16, 50, 28);
+	    SvgHelper.append(node.elements["core"], labelBtn);
+	    node.elements["label_button"] = labelBtn;	    
+	},
+	button: function (node, config) {
+	    var button = SvgHelper.circle(0, 0, 5);
+	    SvgHelper.append(node.elements["core"], button);
+	    node.elements["button"] = button;
+	},
+    }
+
+
+    // @operation
+    function operationBinder(name, func) {
+	return function (node) {
+	    node.operations[name] = function(){ return func(node); }
 	};
     }
 
 
-    // layout
+    // @listener
+    var listener = (function(){
+	// BEGIN listener
+	var exports = {};
+	function createBinder(spec) {
+	    return function (node) {
+		var listener =  function () {
+		    spec["listener"].apply(null, [node].concat(Array.from(arguments)));
+		};
+		SvgHelper.bind(node.elements[spec["elem"]],
+			       spec["type"], listener);
+	    }
+	}
+	var specifications = {
+	    nodeFold: {
+		"elem": "button",
+		"type": "click",
+		"listener": function(node){
+		    if (node.attributes["folded"]) {
+			node.children = node.attributes["_children"];
+			node.attributes["_children"] = [];
+		    } else {
+			node.attributes["_children"] = node.children;
+			node.children = [];
+		    }
+		    node.operations.adjustLayout();
+		    node.attributes["folded"] = ! node.attributes["folded"];
+		},
+	    },
+	    leafSelect: {
+		"elem": "label_button",
+		"type": "click",
+		"listener": function(node) {
+		    node.elements["label_button"].classList.toggle("selected");
+		    node.attributes["selected"] = ! node.attributes["selected"];
+		}
+	    }
+	}
+
+	for (var key in specifications) {
+	    exports[key] = createBinder(specifications[key]);
+	}
+	return exports;
+	// END listener
+    })()
+
+
+    // @layout
     var layout = (function(){
 	var exports = {};
 	// Module layout
 	exports.rectangular = (function () {
-	    var defalutLeafLayout = {
-		"size": 30,
-		"joint": 15
-	    };
-	    function init (node, config) {
-		var leaf_layout = Object.assign({}, defalutLeafLayout, (config.layout && config.layout.leaf));
-		dfs(node, function(node) {
-		    if (node.is_leaf) {
-			node.layout = Object.assign({}, leaf_layout, {
-			    "length": node.data["branch_length"] * node.style["branch_unit"]			
-			})
-			refresh(node);
-		    } else {
-			var sumh = 0;
-			for (var child of node.children) {
-			    setTop(child, sumh);
-			    sumh += child.layout["size"];
-			}
-			var btop = node.children[0].layout["joint"];
-			var bbot = sumh - child.layout["size"] + child.layout["joint"];
-			node.layout = {
-			    "size": sumh,
-			    "joint": (btop + bbot) / 2,
-			    "branch_top": btop,
-			    "branch_bot": bbot,
-			    "length": node.data["branch_length"] * node.style["branch_unit"]
-			}
-			refresh(node);
-			for (var child of node.children) {
-			    SvgHelper.append(node.elements["body"], child.elements["capsule"]);
-			}
-		    }
-		});
-		/*
-		if (node.is_node) {
-		    var sumh = 0;
-		    for (var child of node.children) {
-			init(child, leaf_layout);
-			setTop(child, sumh);
-			sumh += child.layout["size"];
-		    }
-		    var btop = node.children[0].layout["joint"];
-		    var bbot = sumh - child.layout["size"] + child.layout["joint"];
-		    node.layout = {
-			"size": sumh,
-			"joint": (btop + bbot) / 2,
-			"branch_top": btop,
-			"branch_bot": bbot,
-			"length": node.data["branch_length"] * node.style["branch_unit"]
-		    }
+	    function adjust(node) {
+		cleanChildren(node);
+		var path = [];
+		while (node) {
+		    path.push(node);
+		    node = node.parent;
+		}
+		for (var node of path) {
+		    calcBody(node);
+		    calcVBranch(node);
+		    calcLength(node);
 		    refresh(node);
-		    for (var child of node.children) {
-			SvgHelper.append(node.elements["body"], child.elements["capsule"]);
-		    }
+		}
+	    }
+	    function cleanChildren(node) {
+		while (node.elements["body"].childNodes.length > 0) {
+		    node.elements["body"].firstChild.remove();
+		}
+		node.children.map(insertToParent);
+	    }
+	    function init(root, config) {
+		dfs(root, calcBody);
+		dfs(root, calcVBranch);
+		dfs(root, calcLength);
+		dfs(root, refresh);
+		dfs(root, insertToParent);
+	    }
+	    function calcBody(node) {
+		if (node.is_leaf) {
+		    node.layout["size"] = 32;
 		} else {
-		    node.layout = Object.assign({}, leaf_layout, {
-			"length": node.data["branch_length"] * node.style["branch_unit"]			
-		    })
-		    refresh(node);
-		}*/
+		    var size = 0;
+		    for (var child of node.children) {
+			setTop(child, size);
+			size += child.layout["size"];
+		    }
+		    node.layout["size"] = size;
+		}
+	    }
+	    function calcVBranch(node) {
+		if (node.is_leaf || node.children.length == 0) {
+		    node.layout["branch_top"] = 0;
+		    node.layout["branch_bot"] = 0;
+		    node.layout["joint"] = 16;
+		} else {
+		    var first = node.children[0];
+		    var last = node.children[node.children.length-1];
+		    node.layout["branch_top"] = first.layout["joint"];
+		    node.layout["branch_bot"] = node.layout["size"] - last.layout["size"] + last.layout["joint"];
+		    node.layout["joint"] = (node.layout["branch_top"] + node.layout["branch_bot"]) / 2;
+		}
+	    }
+	    function calcLength(node) {
+		node.layout["length"] = node.style["branch_unit"] * node.data["branch_length"];
+	    }
+	    function insertToParent(node) {
+		if (node.parent) {
+		    SvgHelper.append(node.parent.elements["body"], node.elements["capsule"]);
+		}
 	    }
 	    function setTop(node, top) {
 		SvgHelper.attr(node.elements["capsule"], {
@@ -171,31 +260,32 @@ var WebTree = (function(){
 		})
 	    }
 	    function refresh (node) {
-		if (node.is_node) {
-		    refreshBranchLine(node);
-		    refreshVBranchLine(node);
-		    refreshBody(node);
-		} else {
-		    refreshBranchLine(node);
-		    refreshBody(node);
-		    refreshLabel(node);
-		}
+		refreshBranchLine(node);
+		refreshVBranchLine(node);
+		refreshCore(node);
+		refreshBody(node);
 	    }
 	    function refreshBranchLine(node) {
 		SvgHelper.attr(node.elements["branch_line"], {
-		    "x1": 0,
-		    "x2": node.layout["length"],
-		    "y1": node.layout["joint"],
-		    "y2": node.layout["joint"],
+		    "d": SvgHelper.format("M 0,%  H %",
+					  node.layout["joint"],
+					  node.layout["length"])
 		})
 	    }
 	    function refreshVBranchLine(node) {
 		SvgHelper.attr(node.elements["vbranch_line"], {
-		    "x1": node.layout["length"],
-		    "x2": node.layout["length"],
-		    "y1": node.layout["branch_top"],
-		    "y2": node.layout["branch_bot"],
+		    "d": SvgHelper.format("M %,%  V %",
+					  node.layout["length"],
+					  node.layout["branch_top"],
+					  node.layout["branch_bot"])
 		})
+	    }
+	    function refreshCore(node) {
+		SvgHelper.attr(node.elements["core"], {
+		    "transform": SvgHelper.format("translate(%, %)",
+						  node.layout["length"],
+						  node.layout["joint"]),
+		});
 	    }
 	    function refreshBody(node) {
 		var blen = node.layout["length"];
@@ -203,42 +293,34 @@ var WebTree = (function(){
 		    "transform": SvgHelper.format("translate(%,0)", blen)
 		})
 	    }
-	    function refreshLabel(node) {
-		SvgHelper.attr(node.elements["label"], {
-		    "transform": SvgHelper.format("translate(0,%)", node.layout["joint"]),
-		    "dominant-baseline": "central",
-		});
-	    }
 	    return {
-		init: init, refresh: refresh
+		initLayout: init,
+		layoutAdjuster: operationBinder("adjustLayout", adjust),
 	    };
 	})(); // END layout.rectangular
-
-	exports.circular = (function(){
-	    // BEGIN layout.circular
-	    function init(node) {}
-	    // END layout.circular
-	})();
-	
 	return exports;
 	// END layout
     })(); 
 
 
 
-    
+    // @recipe
     var Recipes = { // [ config, node_pipeline, tree_pipline]
-	"rect_view": {
+	"rect": {
 	    "config": {},
-	    "node_pipline": [addStandardElements, addStyle], 
-	    "leaf_pipline": [addStandardElements, addLabel, addStyle], 
-	    "tree_pipline": [layout.rectangular.init],
+	    "node_pipline": [addStandardElements, dynamicViewerSupport, widget.button,
+			     layout.rectangular.layoutAdjuster, listener.nodeFold], 
+	    "leaf_pipline": [addStandardElements, dynamicViewerSupport, widget.labelButton, widget.label, listener.leafSelect], 
+	    "tree_pipline": [layout.rectangular.initLayout],
 	},
     }
     function generateTree(descr, recipe) {
 	function piplineToOperation(pipline) {
 	    return function (obj) {
 		for (var proc of pipline) {
+		    if (proc == undefined) {
+			debugger;
+		    }
 		    proc(obj, recipe["config"]);
 		}
 	    };
@@ -270,7 +352,7 @@ var WebTree = (function(){
     
     return {
 	rectangular: function(descr) {
-	    return generateTree(descr, Recipes["rect_view"]);
+	    return generateTree(descr, Recipes["rect"]);
 	}
     }
 })()
