@@ -16,6 +16,9 @@ var SvgHelper = (function(){
 	    }
 	    return str;
 	},
+	transform: function (elem, txt) {
+	    SH.attr(elem, { "transform": txt });
+	},
 	format: function (pattern) {
 	    var str = "";
 	    var i, j;
@@ -47,7 +50,7 @@ var SvgHelper = (function(){
 	attr: function (elem, descr) {
 	    for (var attr in descr) {
 		var val = descr[attr];
-		if (val == undefined)
+		if (val == undefined || elem == undefined || elem.setAttributeNS == undefined)
 		    debugger;
 		elem.setAttributeNS(null, attr, val);
 	    }
@@ -61,18 +64,18 @@ var SvgHelper = (function(){
 	    SH.append(elem, document.createTextNode(txt));
 	    return elem;
 	},
-	title: function (elem, text) {
+	title: function (elem, txt) {
 	    // remove existing title
-	    var telem = SH.create('title');
-	    SH.text(telem, text);
+	    var t = SH.create('title');
+	    SH.append(t, document.createTextNode(txt));
 	    for (var child of elem.childNodes) {
 		if (child.tagName == 'title') {
 		    elem.removeChild(child);
 		    child = elem.firstElementChild;
 		}
 	    }
-	    elem.appendChild(telem);
-	    return telem;
+	    elem.appendChild(t);
+	    return elem;
 	},
 	g: function (_) {
 	    var elem = SH.create('g');

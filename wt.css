@@ -2,9 +2,27 @@ svg {
     stroke: black;
 }
 
+text {
+    pointer-events: none;
+    dominant-baseline: middle;
+}
+
+path {
+    fill: none;
+}
+
 rect {
     fill: white;
 }
-rect.selected {
+g.selected rect {
     fill: yellow;
+}
+
+circle {
+    fill: white;
+    stroke: blue;
+}
+g.folded circle {
+    fill: blue;
+    stroke: lightblue;
 }
