@@ -157,7 +157,7 @@ var WebTree = (function(){
 	nodeHint: Binder.listener("button", "mouseover", function(node) {
 	    SvgHelper.title(node.elements["button"], (node.attributes["hint"] || ""));
 	}),
-	getClassList: Binder.operations("getClassList", function(node) {
+	getClassList: Binder.operator("getClassList", function(node) {
 	    return node.elements["capsule"].classList;
 	}),
 	nameToNode: function(node) {
