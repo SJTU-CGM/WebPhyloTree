@@ -23,7 +23,15 @@ var SvgHelper = (function(){
 	    var str = "";
 	    var i, j;
 	    for (i = j = 0; i < pattern.length; i++) {
-		str += (pattern[i] == '%') ? arguments[++j] : pattern[i];
+		if (pattern[i] == '%') {
+		    j += 1;
+		    if (arguments[j] == undefined || isNaN(arguments[j])) {
+			debugger;
+		    }
+		    str += arguments[j];
+		} else {
+		    str += pattern[i];
+		}
 	    }
 	    return str;
 	},
