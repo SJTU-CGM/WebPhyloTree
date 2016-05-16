@@ -160,6 +160,12 @@ var WebTree = (function(){
 	getClassList: Binder.operations("getClassList", function(node) {
 	    return node.elements["capsule"].classList;
 	}),
+	nameToNode: function(node) {
+	    if (node.share.nameToNode == undefined) {
+		node.share.nameToNode = {};
+	    }
+	    node.share.nameToNode[node.name] = node;
+	},
     }
 
 
