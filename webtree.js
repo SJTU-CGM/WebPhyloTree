@@ -195,6 +195,9 @@ var WebTree = (function(){
 		}
 	    }
 	}
+	function calcSpan(node) {
+	    node.layout["span"] = node.layout["count"] * node.share["unit"];
+	}
 	function insertToParent(node) {
 	    if (node.parent) {
 		SvgHelper.append(node.parent.elements["body"], node.elements["capsule"]);
@@ -336,7 +339,7 @@ var WebTree = (function(){
 		if (node.is_leaf || node.children.length == 0) {
 		    node.layout["vbranch_from"] = 0;
 		    node.layout["vbranch_to"] = 0;
-		    node.layout["joint"] = node.layout["unit"] / 2;
+		    node.layout["joint"] = node.share["unit"] / 2;
 		} else {
 		    var first = node.children[0];
 		    var last = node.children[node.children.length-1];
@@ -399,6 +402,7 @@ var WebTree = (function(){
 		setUnitDegree(root);
 		root.layout["rotate"] = 0;
 		root.data["branch_length"] = 0;
+		calc(root);
 		dfs(root, refresh);
 		dfs(root, insertToParent);
 		SvgHelper.transform(
@@ -408,6 +412,7 @@ var WebTree = (function(){
 	    }
 	    function calc(root) {
 		bfs([root], calcRotate);
+		dfs(root, calcSpan);
 		dfs(root, calcLength);		
 	    }
 	    function refresh(node) {
