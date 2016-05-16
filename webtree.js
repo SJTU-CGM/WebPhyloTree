@@ -469,6 +469,18 @@ var WebTree = (function(){
 	    },
 	    "leaf_pipeline": [Elements.standard, Base.dynamicViewer, Appendages.label], 
 	    "tree_pipeline": [Layout.rectangular.init],
+	},
+	"unrooted": {
+	    "node_config": {
+		"branch_unit": 50,
+	    },
+	    "node_pipeline": [Elements.standard, Base.dynamicViewer], 
+	    "leaf_config": {
+		"branch_unit": 50,
+		"size": 32,
+	    },
+	    "leaf_pipeline": [Elements.standard, Base.dynamicViewer, Appendages.label], 
+	    "tree_pipeline": [Layout.unrooted.init],
 	}
     };
 
