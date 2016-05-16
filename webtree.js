@@ -527,6 +527,9 @@ var WebTree = (function(){
 	rectangular: function(descr) {
 	    return generateTree(descr, Recipes["rectangular"]);
 	},
+	unrooted: function(descr) {
+	    return generateTree(descr, Recipes["unrooted"]);
+	},
 	load: function(tree_descr, raw_recipe) {
 	    var recipe = {};
 	    var layoutEngine = Layout[raw_recipe["layout"]];
