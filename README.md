@@ -1,9 +1,32 @@
 # WebTree
-A Web-based tree viewer. Generating SVG from Newick or dynamically.
+A Web-based embedable dynamic tree viewer. Translate JSON into SVG. Lightweight and extensible.
 
-## Implementing Goal
-* svg wrapper (done)
-* base class Node
-* derived class Leaf
-* usable plugin mechanism for Node (Leaf)
-* newick parser (done)
+# Feature
+* Layouts
+  * Rectangular
+  * Circular
+  * Unrooted
+* Appendages
+  * label
+  * labelButton
+  * Button
+* Extensions
+  * nodeFold
+  * leafSelection
+  * ... (coming soon)
+  
+# Requirements
+__None__
+
+# Usage
+## HTML
+<script src="js/webtree.js"></script>
+
+## XML
+<script xlink:href="svg-helper.js" type="text/javascript" />
+
+# See Also
+* parseNewick
+  translate Newick string into JSON
+* parsePhyloXML
+  translate phyloXML string into JSON
