@@ -20,10 +20,10 @@ __None__
 
 # Usage
 ## HTML
-'''<script src="js/webtree.js"></script>'''
+	<script src="js/webtree.js"></script>
 
 ## XML
-'''<script xlink:href="svg-helper.js" type="text/javascript" />'''
+	<script xlink:href="svg-helper.js" type="text/javascript" />
 
 # See Also
 * parseNewick
