@@ -59,26 +59,23 @@ var WebTree = (function(){
 	function addPackingElements(node) {
 	    var caps = SvgHelper.g();
 	    var body = SvgHelper.g();
-	    var bchg = SvgHelper.g();
 	    var core = SvgHelper.g();
 	    SvgHelper.append(caps, body);
-	    SvgHelper.append(caps, bchg);
 	    SvgHelper.append(caps, core);
 	    node.elements = {
 		"capsule": caps,
 		"core": core,
-		"branch_group": bchg,
 		"body": body,
 	    }
 	}
 	function addBranchLineElement(node) {
 	    var brch = SvgHelper.path();
-	    SvgHelper.append(node.elements["branch_group"], brch);
+	    SvgHelper.append(node.elements["capsule"], brch);
 	    node.elements["branch_line"] = brch;
 	}
 	function addVBranchLineElement(node) {
 	    var vbrch = SvgHelper.path();
-	    SvgHelper.append(node.elements["branch_group"], vbrch);
+	    SvgHelper.append(node.elements["capsule"], vbrch);
 	    node.elements["vbranch_line"] = vbrch;
 	}
 	function addStandardElements(node) {
@@ -565,6 +562,9 @@ var WebTree = (function(){
 	},
 	expert: function(descr, recipe) {
 	    return generateTree(descr, recipe);
+	},
+	exportTree: function(node) {
+	    console.log("<svg>" + node.elements["capsule"].innerHTML + "</svg>");
 	}
     }
 })()

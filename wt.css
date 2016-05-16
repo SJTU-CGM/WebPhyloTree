@@ -1,5 +1,5 @@
 svg {
-    stroke: black;
+    stroke: grey;
 }
 
 text {
@@ -25,4 +25,28 @@ circle {
 g.folded circle {
     fill: blue;
     stroke: lightblue;
+}
+
+g.boydii path {
+    stroke: red;
+}
+
+g.flexneri path {
+    stroke: blue;
+}
+
+g.dysenteriae path {
+    stroke: green;
+}
+
+g.sonnei path {
+    stroke: orange;
+}
+
+g.ecoli path {
+    stroke: black;
+}
+
+g.selected path {
+    stroke-width: 3;
 }
