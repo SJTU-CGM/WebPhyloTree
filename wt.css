@@ -1,14 +1,19 @@
 svg {
-    stroke: grey;
+    stroke: black;
 }
 
 text {
+    font-size: 1em;
     pointer-events: none;
     dominant-baseline: middle;
 }
 
 path {
     fill: none;
+}
+
+line {
+    stroke: grey;
 }
 
 rect {
@@ -25,26 +30,6 @@ circle {
 g.folded circle {
     fill: blue;
     stroke: lightblue;
-}
-
-g.boydii path {
-    stroke: red;
-}
-
-g.flexneri path {
-    stroke: blue;
-}
-
-g.dysenteriae path {
-    stroke: green;
-}
-
-g.sonnei path {
-    stroke: orange;
-}
-
-g.ecoli path {
-    stroke: black;
 }
 
 g.selected path {
