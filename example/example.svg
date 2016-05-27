@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet href="wt.css" type="text/css"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="800">
-  <script xlink:href="newick.js" type="text/javascript" />
-  <script xlink:href="webtree.js" type="text/javascript" />
-  <script xlink:href="extensions.js" type="text/javascript" />
-  <script xlink:href="appendages.js" type="text/javascript" />
-  <script xlink:href="main.js" type="text/javascript" />
-</svg>

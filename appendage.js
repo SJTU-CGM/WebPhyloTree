@@ -1,5 +1,5 @@
 (function(WT){
-    WT.Appendages = {
+    WT.Appendage = {
 	label: function (node) {
 	    var label = WT.SvgHelper.text(node.data["label"] || node.name);
 	    node.elements["hook"].appendChild(label);

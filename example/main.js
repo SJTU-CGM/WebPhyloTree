@@ -1,35 +1,21 @@
 "use strict";
 
-//var filename = "example.newick";
-var filename = "tree-of-life.newick";
-
-function main() {
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = load;
-    xhr.open("GET", filename);
-    xhr.send();
-
-    function load() {
-	if (xhr.readyState === XMLHttpRequest.DONE) {
-	    if (xhr.status === 200) {
-		var tree = parseNewick(xhr.responseText);
-		loadTree(tree);
-	    } else {
-		alert('There was a problem with the request.');
-	    }
-	}
-    }
-}
+var tree = { name: "A", length: 10,
+	     subnodes: [{ name: "B", length: 30,
+			  subnodes: [{ name: "D", length: 20 },
+				     { name: "E", length: 20 }] },
+			{ name: "C", length: 20 }] }
 
 var root;
-function loadTree(tree) {
+function main() {
     //root = WebTree.rectangular(tree);
     //root = WebTree.circular(tree);
     root = WebTree.unrooted(tree);
-    document.rootElement.appendChild(root.element);
+    document.rootElement.appendChild(root.elem);
     WebTree.DFS(root, function(node){
-	if (node.is_leaf) {
-	    WebTree.Extensions.labelRotate(node);
+	if (node.subnodes == undefined) {
+	    WebTree.Appendage.label(node);
+	    WebTree.Extension.rotateLabel(node);
 	}
     });
 }

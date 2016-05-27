@@ -35,9 +35,9 @@
 		}
 	    });
 	},
-	rotateLable: function(leaf) {
+	rotateLabel: function(leaf) {
 	    if (leaf.subnodes == undefined) {
-		var CTM = leaf.elem.getCTM();
+		var CTM = leaf.elements["hook"].getCTM();
 		if (CTM.a < 0) {
 		    var label = leaf.elements["label"];
 		    var BOX = label.getBBox();

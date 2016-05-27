@@ -381,15 +381,16 @@ var WebTree = (function(){
 		dfs(root, function(node) {
 		    deep = Math.max(node.layout["radius"], deep);
 		});
-		SvgHelper.transform(root.elem,
-				    SvgHelper.format("translate(%, %)", deep+250, deep+250));
+		SvgHelper.transform(
+		    root.elem, SvgHelper.format("translate(%, %)", deep+20, deep+20)
+		);
 		dfs(root, insertToParent);
 	    }
 	    function calcVBranch(node) {
 		if (isLeaf(node) || node.subnodes.length == 0) {
 		    node.layout["vbranch_from"] = 0;
 		    node.layout["vbranch_to"] = 0;
-		    node.layout["joint"] = 0; //node.share["unit"] / 2;
+		    node.layout["joint"] = node.share["unit"] / 2;
 		} else {
 		    var first = node.subnodes[0];
 		    var last = node.subnodes[node.subnodes.length-1];
@@ -476,7 +477,7 @@ var WebTree = (function(){
 		    maxDepth = Math.max(maxDepth, node.attributes["depth"]);
 		});
 		SvgHelper.transform(
-		    root.elem, SvgHelper.format("translate(%, %)", maxDepth, maxDepth)
+		    root.elem, SvgHelper.format("translate(%, %)", maxDepth*0.8, maxDepth*0.8)
 		);
 	    }
 	    function calc(root) {
@@ -501,7 +502,7 @@ var WebTree = (function(){
 		    node.elements["branch"],
 		    {
 			"d": SvgHelper.format("M 0,0  H %", node.layout["length"]),
-			"transform": SvgHelper.format("rotate(%)", isLeaf(node) ? 0 : (node.layout["span"]/2)),
+			"transform": SvgHelper.format("rotate(%)", node.layout["span"]/2),
 		    }
 		);
 	    }
@@ -510,7 +511,7 @@ var WebTree = (function(){
 		    node.elements["hook"],
 		    SvgHelper.format(
 			"rotate(%) translate(%,0)",
-			isLeaf(node) ? 0 : (node.layout["span"]/2),
+			node.layout["span"] / 2,
 			node.layout["length"]
 		    )
 		);
@@ -539,7 +540,7 @@ var WebTree = (function(){
 	"rectangular": {
 	    "layout": "rectangular",
 	    "config": {
-		"branch_unit": 5,
+		"branch_unit": 10,
 	    },
 	    "leaf_config": {
 		"size": 32,
@@ -548,13 +549,13 @@ var WebTree = (function(){
 	"circular": {
 	    "layout": "circular",
 	    "config": {
-		"branch_unit": 2,
+		"branch_unit": 6,
 	    },
 	},
 	"unrooted": {
 	    "layout": "unrooted",
 	    "config": {
-		"branch_unit": 5,
+		"branch_unit": 10,
 	    },
 	}
     };
