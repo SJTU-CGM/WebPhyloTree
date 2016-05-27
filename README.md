@@ -37,5 +37,5 @@ var root = WebTree.rectangular(description, {
 
 ## See also
 As WebTree takes JSON as input, you may need a parser for Newick or phyloXML.  
-parseNewick(str::txt)  
+```parseNewick(String txt)  ```  
 https://github.com/KelvinLu1024/newick.js
