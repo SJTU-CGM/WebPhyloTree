@@ -1,46 +1,140 @@
 var WebTree = (function(){
+    var SvgHelper = (function(){
+	function apply(func, arr) {
+	    return func.apply(null, arr);
+	}
+	var SH = {
+	    xmlns: "http://www.w3.org/2000/svg",
+	    transform: function (elem, txt) {
+		SH.attr(elem, { "transform": txt });
+	    },
+	    format: function (pattern) {
+		var str = "";
+		var i, j;
+		for (i = j = 0; i < pattern.length; i++) {
+		    if (pattern[i] == "%") {
+			j += 1;
+			if (arguments[j] == undefined || isNaN(arguments[j]))
+			    debugger;
+			str += arguments[j];
+		    } else {
+			str += pattern[i];
+		    }
+		}
+		return str;
+	    },
+	    create: function (tag, descr) {
+		var elem = document.createElementNS(SH.xmlns, tag);
+		if (descr != undefined) {
+		    SH.attr(elem, descr);
+		}
+		return elem;
+	    },
+	    attr: function (elem, descr) {
+		for (var attr in descr) {
+		    var val = descr[attr];
+		    if (val == undefined || elem == undefined || elem.setAttributeNS == undefined)
+			debugger;
+		    elem.setAttributeNS(null, attr, val);
+		}
+		return elem;
+	    },
+	    text: function (txt) {
+		var elem = SH.create("text");
+		elem.appendChild(document.createTextNode(txt));
+		return elem;
+	    },
+	    title: function (elem, txt) {
+		// remove existing title
+		for (var snode of elem.childNodes) {
+		    if (snode.tagName == "title") {
+			elem.removeChild(snode);
+		    }
+		}
+		var telem = SH.create("title");
+		SH.append(telem, document.createTextNode(txt));
+		elem.appendChild(telem);
+		return elem;
+	    },
+	    g: function (_) {
+		var elem = SH.create("g");
+		if (_ != undefined) {
+		    for (var e of arguments) {
+			elem.appendChild(e);
+		    }
+		}
+		return elem;
+	    },
+	    rect: function (x, y, width, height, rx, ry) {
+		var elem = SH.create("rect", {
+		    "x": x || 0, "y": y || 0,
+		    "width": width || 0, "height": height || 0,
+		    "rx": rx || 0, "ry": ry || 0,
+		});
+		return elem;
+	    },
+	    line: function (x1, y1, x2, y2) {
+		var elem = SH.create("line", {
+		    "x1": x1 || 0, "y1": y1 || 0,
+		    "x2": x2 || 0, "y2": y2 || 0,
+		})
+		return elem;
+	    },
+	    path: function () {
+		var elem = SH.create("path");
+		return elem;
+	    },
+	    circle: function (cx, cy, r) {
+		var elem = SH.create("circle", {
+		    "cx": cx || 0, "cy": cy || 0,"r" : r  || 0,
+		})
+		return elem;
+	    }
+	};
+	return SH;
+    })()
     // @help functions
     function dfs(node, func) {
-	if (node.is_node) {
-	    for (var child of node.children) {
-		dfs(child, func);
+	if (isNode(node)) {
+	    if (node.subnodes == undefined)
+		debugger;
+	    for (var snode of node.subnodes) {
+		dfs(snode, func);
 	    }
 	}
 	func(node);
     }
     function bfs(queue, func) {
+	if (queue == undefined) debugger;
 	queue = queue.slice(0);
 	while (queue.length > 0) {
 	    var node = queue.shift();
 	    func(node);
-	    if (node.is_node) {
-		for (var child of node.children) {
-		    queue.push(child);
+	    if (isNode(node)) {
+		for (var snode of node.subnodes) {
+		    queue.push(snode);
 		}
 	    }
 	}
     }
-    function member(arr) {
-	return function(val) {
-	    return arr.indexOf(val) >= 0;
-	}
+    function isLeaf(node) {
+	return node.subnodes == undefined;
     }
-
+    function isNode(node) {
+	return ! isLeaf(node);
+    }
+    function appendNode(n1, n2) {
+	n2.parent = n1;
+	n1.subnodes.push(n2);
+    }
     // @constructor
     function Node(name, length, data) {
 	this.name = name;
 	this.length = length;
 	this.parent = null;
 	this.data = data;
-	this.children = [];
+	this.subnodes = [];
 	return this;
-    }
-    Node.prototype = {
-	is_node: true, is_leaf: false,
-	append: function(child) {
-	    this.children.push(child);
-	    child.parent = this;
-	}
     }
     function Leaf(name, length, data) {
 	this.name = name;
@@ -49,46 +143,40 @@ var WebTree = (function(){
 	this.data = data;
 	return this;
     }
-    Leaf.prototype = {
-	is_node: false, is_leaf: true,
-	append: function(_) {
-	    debugger;
-	},
-    }
 
     // @elements
     var Elements = (function(){
 	function createCapsule(node) {
 	    var caps = SvgHelper.g();
 	    node.elements = { "capsule": caps };
-	    node.element = caps;
+	    node.elem = caps;
 	}
 	function addBodyElement(node) {
 	    var body = SvgHelper.g();
-	    node.element.appendChild(body);
+	    node.elem.appendChild(body);
 	    node.elements["body"] = body;
 	}	    
 	function addBranchLineElement(node) {
 	    var brch = SvgHelper.path();
-	    node.element.appendChild(brch);
+	    node.elem.appendChild(brch);
 	    node.elements["branch"] = brch;
 	}
 	function addVBranchLineElement(node) {
 	    var vbrch = SvgHelper.path();
-	    node.element.appendChild(vbrch);
+	    node.elem.appendChild(vbrch);
 	    node.elements["vbranch"] = vbrch;
 	}
-	function addCoreElement(node) {
-	    var core = SvgHelper.g();
-	    node.elements["core"] = core;
-	    node.element.appendChild(core);
+	function addHookElement(node) {
+	    var hook = SvgHelper.g();
+	    node.elements["hook"] = hook;
+	    node.elem.appendChild(hook);
 	}
 	function addStandardElements(node) {
 	    createCapsule(node);
 	    addBodyElement(node);
 	    addBranchLineElement(node);
 	    addVBranchLineElement(node);
-	    addCoreElement(node);
+	    addHookElement(node);
 	}
 	
 	return {
@@ -108,125 +196,23 @@ var WebTree = (function(){
 	},
     };
 
-
-    // @appendages
-    var Appendages = {
-	label: function (node) {
-	    var label = SvgHelper.text(node.data["label"] || node.name);
-	    node.elements["core"].appendChild(label);
-	    node.elements["label"] = label;
-	},
-	labelButton: function(node) {
-	    var labelBtn = SvgHelper.rect(0, -16, 50, 28);
-	    node.elements["core"].appendChild(labelBtn);
-	    node.elements["label_button"] = labelBtn;	    
-	},
-	button: function (node) {
-	    var button = SvgHelper.circle(0, 0, 5);
-	    node.elements["core"].appendChild(button);
-	    node.elements["button"] = button;
-	}
-    };
-    
-    // @binder
-    var Binder = {
-	operator: function(name, func) {
-	    return function (node) {
-		node[name] = function(){ return func(node); }
-	    };
-	},
-	listener: function(elem, type, func) {
-	    return function (node) {
-		SvgHelper.bind(
-		    node.elements[elem],
-		    type,
-		    function() { func(node); }
-		);
-	    }
-	},
-    };
-
-
-    // @extensions
-    var Extensions = {
-	nodeFold: Binder.listener("button", "click", function(node){
-	    var classList = node.element.classList;
-	    if (classList.contains("folded")) {
-		node.children = node.attributes["_children"];
-	    } else {
-		node.attributes["_children"] = node.children;
-		node.children = [];
-	    }
-	    node.adjustLayout();
-	    classList.toggle("folded");
-	}),
-	nodeHint: Binder.listener("button", "mouseover", function(node) {
-	    SvgHelper.title(node.elements["button"], (node.attributes["hint"] || ""));
-	}),
-	getClassList: Binder.operator("getClassList", function(node) {
-	    return node.element.classList;
-	}),
-	nameToNode: function(node) {
-	    if (node.share.nameToNode == undefined) {
-		node.share.nameToNode = {};
-	    }
-	    node.share.nameToNode[node.name] = node;
-	},
-	extBranch: function(root) {
-	    var maxDepth = 0;
-	    root.attributes["depth"] = 0;
-	    bfs(root.children, function(node){
-		node.attributes["depth"] = node.parent.attributes["depth"] + node.layout["length"];
-		maxDepth = Math.max(maxDepth, node.attributes["depth"]);
-	    });
-	    dfs(root, function(node){
-		if (node.is_leaf) {
-		    var delta = maxDepth - node.attributes["depth"];
-		    var ebranch = SvgHelper.line(-delta, 0, 0, 0);
-		    node.elements["core"].appendChild(ebranch);
-		    node.elements["ebranch"] = ebranch;
-		    var oldAdjust = node.adjustLayout;
-		    node.adjustLayout = function(){
-			if (oldAdjust != undefined) {
-			    oldAdjust();
-			}
-			var trans = document.querySelector("svg").createSVGTransform();
-			trans.setTranslate(delta, 0);
-			node.elements["core"].transform.baseVal.appendItem(trans);
-		    }
-		    node.adjustLayout();
-		}
-	    });
-	},
-	labelRotate: function(leaf) {
-	    console.log(leaf.name, leaf.element.getCTM());
-	    if (leaf.element.getCTM().c < 0) {
-		var label = leaf.elements["label"];
-		var trans = document.querySelector("svg").createSVGTransform();
-		trans.setRotate(180, 0, 0);
-		leaf.elements["label"].transform.baseVal.appendItem(trans);
-		var trans = document.querySelector("svg").createSVGTransform();
-		trans.setTranslate(-label.getBoundingClientRect().width, 0);
-		leaf.elements["label"].transform.baseVal.appendItem(trans);
-	    }
-	}
-    }
-
-
     // @layout
     var Layout = (function(){
 	var L = {}
 	function calcLength(node) {
 	    node.layout["length"] = node.config["branch_unit"] * node.data["branch_length"];
 	}
+	function calcShift(node) {
+	    node.layout["shift"] = node.layout["length"];
+	}
 	function count(root) {
 	    dfs(root, function(node) {
-		if (node.is_leaf) {
+		if (isLeaf(node)) {
 		    node.layout["count"] = 1;
 		} else {
 		    node.layout["count"] = 0;
-		    for (var child of node.children) {
-			node.layout["count"] += child.layout["count"];			
+		    for (var snode of node.subnodes) {
+			node.layout["count"] += snode.layout["count"];			
 		    }
 		}
 	    });
@@ -235,13 +221,13 @@ var WebTree = (function(){
 	    root.share["unit"] = 360 / root.layout["count"];
 	}
 	function calcRotate(node) {
-	    if (node.is_node) {
-		if (node.children == undefined)
+	    if (isNode(node)) {
+		if (node.subnodes == undefined)
 		    debugger;
 		var sum = 0;
-		for (var child of node.children) {
-		    child.layout["rotate"] = sum * node.share["unit"];
-		    sum += child.layout["count"];
+		for (var snode of node.subnodes) {
+		    snode.layout["rotate"] = sum * node.share["unit"];
+		    sum += snode.layout["count"];
 		}
 	    }
 	}
@@ -250,22 +236,22 @@ var WebTree = (function(){
 	}
 	function insertToParent(node) {
 	    if (node.parent) {
-		node.parent.elements["body"].appendChild(node.element);
+		node.parent.elements["body"].appendChild(node.elem);
 	    }
 	}
-	function reloadChildren(node) {
-	    if (node.is_node) {
+	function reloadSubnodes(node) {
+	    if (isNode(node)) {
 		while (node.elements["body"].childNodes.length > 0) {
-		    node.elements["body"].firstChild.remove();
+		    node.elements["body"].firstSnode.remove();
 		}
-		node.children.map(insertToParent);
+		node.subnodes.map(insertToParent);
 	    }
 	}
 	// @layout @@rectangular
 	L.rectangular = (function () {
 	    function adjust(node) {
-		if (node.is_node) {
-		    reloadChildren(node);
+		if (isNode(node)) {
+		    reloadSubnodes(node);
 		    var path = [];
 		    while (node) {
 			path.push(node);
@@ -275,8 +261,8 @@ var WebTree = (function(){
 			calcBody(node);
 			calcVBranch(node);
 			refresh(node);
-			for (var child of node.children) {
-			    refreshCapsule(child);
+			for (var snode of node.subnodes) {
+			    refreshCapsule(snode);
 			}
 		    }
 		}
@@ -287,33 +273,34 @@ var WebTree = (function(){
 		dfs(root, calcBody);
 		dfs(root, calcVBranch);
 		dfs(root, calcLength);
+		dfs(root, calcShift);
 		dfs(root, refresh);
 		dfs(root, insertToParent);
 	    }
 	    function calcBody(node) {
-		if (node.is_leaf) {
+		if (isLeaf(node)) {
 		    node.layout["size"] = node.config["size"] != undefined ? node.config["size"] : 32;
 		} else {
-		    if (node.children.length == 0) {
+		    if (node.subnodes.length == 0) {
 			node.layout["size"] = node.config["folded_size"] != undefined ? node.config["folded_size"] : 32;
 		    } else {
 			var size = 0;
-			for (var child of node.children) {
-			    child.layout["top"] = size;
-			    size += child.layout["size"];
+			for (var snode of node.subnodes) {
+			    snode.layout["top"] = size;
+			    size += snode.layout["size"];
 			}
 			node.layout["size"] = size;
 		    }
 		}
 	    }
 	    function calcVBranch(node) {
-		if (node.is_leaf || node.children.length == 0) {
+		if (isLeaf(node) || node.subnodes.length == 0) {
 		    node.layout["branch_top"] = 0;
 		    node.layout["branch_bot"] = 0;
 		    node.layout["joint"] = node.layout["size"] / 2;
 		} else {
-		    var first = node.children[0];
-		    var last = node.children[node.children.length-1];
+		    var first = node.subnodes[0];
+		    var last = node.subnodes[node.subnodes.length-1];
 		    node.layout["branch_top"] = first.layout["joint"];
 		    node.layout["branch_bot"] = node.layout["size"] - last.layout["size"] + last.layout["joint"];
 		    node.layout["joint"] = (node.layout["branch_top"] + node.layout["branch_bot"]) / 2;
@@ -323,132 +310,156 @@ var WebTree = (function(){
 		refreshCapsule(node);
 		refreshBranchLine(node);
 		refreshVBranchLine(node);
-		refreshCore(node);
+		refreshHook(node);
 		refreshBody(node);
 	    }
 	    function refreshCapsule(node) {
-		SvgHelper.attr(node.element, {
+		SvgHelper.attr(node.elem, {
 		    "transform": SvgHelper.format("translate(0,%)", node.layout["top"])
 		})		
 	    }
 	    function refreshBranchLine(node) {
 		SvgHelper.attr(node.elements["branch"], {
-		    "d": SvgHelper.format("M 0,%  H %",
-					  node.layout["joint"],
-					  node.layout["length"])
+		    "d": SvgHelper.format(
+			"M 0,%  H %",
+			node.layout["joint"],
+			node.layout["length"]
+		    )
 		})
 	    }
 	    function refreshVBranchLine(node) {
 		SvgHelper.attr(node.elements["vbranch"], {
-		    "d": SvgHelper.format("M %,%  V %",
-					  node.layout["length"],
-					  node.layout["branch_top"],
-					  node.layout["branch_bot"])
+		    "d": SvgHelper.format(
+			"M %,%  V %",
+			node.layout["length"],
+			node.layout["branch_top"],
+			node.layout["branch_bot"]
+		    )
 		})
 	    }
-	    function refreshCore(node) {
-		SvgHelper.attr(node.elements["core"], {
-		    "transform": SvgHelper.format("translate(%, %)",
-						  node.layout["length"],
-						  node.layout["joint"]),
+	    function refreshHook(node) {
+		SvgHelper.attr(node.elements["hook"], {
+		    "transform": SvgHelper.format(
+			"translate(%, %)",
+			node.layout["shift"],
+			node.layout["joint"]
+		    ),
 		});
 	    }
 	    function refreshBody(node) {
-		var blen = node.layout["length"];
+		var blen = node.layout["shift"];
 		SvgHelper.attr(node.elements["body"], {
 		    "transform": SvgHelper.format("translate(%,0)", blen)
 		})
 	    }
 	    return {
 		init: init,
-		bindAdjuster: Binder.operator("adjustLayout", adjust),
+		adjust: adjust,
 	    };
 	})(); 
 	// @layout @@circular
 	L.circular = (function(){
 	    function adjust(node) {
-		reloadChildren(node);
+		reloadSubnodes(node);
 		calcVBranch(node);
 		refreshVBranchLine(node);
 	    }
 	    function init(root) {
+		// count unit degree
 		count(root);
 		setUnitDegree(root);
+		// calc other thins
 		root.layout["rotate"] = 0;
 		bfs([root], calcRotate);
 		dfs(root, calcVBranch);
 		dfs(root, calcLength);
-		root.layout["radius"] = root.layout["length"];
-		bfs(root.children, calcRadius);
+		dfs(root, calcShift);
+		root.layout["radius"] = root.layout["shift"];
+		bfs(root.subnodes, calcRadius);
 		dfs(root, refresh);
 		var deep = 0;
 		dfs(root, function(node) {
 		    deep = Math.max(node.layout["radius"], deep);
 		});
-		SvgHelper.transform(root.element,
+		SvgHelper.transform(root.elem,
 				    SvgHelper.format("translate(%, %)", deep+250, deep+250));
 		dfs(root, insertToParent);
 	    }
 	    function calcVBranch(node) {
-		if (node.is_leaf || node.children.length == 0) {
+		if (isLeaf(node) || node.subnodes.length == 0) {
 		    node.layout["vbranch_from"] = 0;
 		    node.layout["vbranch_to"] = 0;
-		    node.layout["joint"] = node.share["unit"] / 2;
+		    node.layout["joint"] = 0; //node.share["unit"] / 2;
 		} else {
-		    var first = node.children[0];
-		    var last = node.children[node.children.length-1];
+		    var first = node.subnodes[0];
+		    var last = node.subnodes[node.subnodes.length-1];
 		    node.layout["vbranch_from"] = first.layout["joint"];
 		    node.layout["vbranch_to"] = last.layout["rotate"] + last.layout["joint"];
 		    node.layout["joint"] = (node.layout["vbranch_from"] + node.layout["vbranch_to"]) / 2;
 		}
 	    }
 	    function calcRadius(node) {
-		node.layout["radius"] = node.parent.layout["radius"] + node.layout["length"];
+		node.layout["radius"] = node.parent.layout["radius"] + node.layout["shift"];
 	    }
 	    function refresh (node) {
 		refreshCapsule(node);
 		refreshBranchLine(node);
 		refreshVBranchLine(node);
-		refreshCore(node);
+		refreshHook(node);
 	    }
 	    function refreshCapsule(node) {
-		SvgHelper.transform(node.element,
-				    SvgHelper.format("rotate(%)", node.layout["rotate"]));
+		SvgHelper.transform(
+		    node.elem,
+		    SvgHelper.format(
+			"rotate(%)", node.layout["rotate"]
+		    )
+		);
 	    }
 	    function refreshBranchLine(node) {
 		SvgHelper.attr(node.elements["branch"], {
-		    "d": SvgHelper.format("M %,0 h -%", node.layout["radius"], node.layout["length"]),
-		    "transform": SvgHelper.format("rotate(%)", node.layout["joint"]),
+		    "d": SvgHelper.format(
+			"M %,0 h -%", node.layout["radius"], node.layout["length"]
+		    ),
+		    "transform": SvgHelper.format(
+			"rotate(%)", node.layout["joint"]
+		    ),
 		});
 	    }
 	    function refreshVBranchLine(node) {
 		var delta = node.layout["vbranch_to"] - node.layout["vbranch_from"];
 		var radius = node.layout["radius"];
 		SvgHelper.attr(node.elements["vbranch"], {
-		    "d": SvgHelper.format("M %,0  A %,% 0 %,1 %,%",
-					  radius,
-					  radius, radius,
-					  (delta > 180) ? 1 : 0,
-					  radius * Math.cos(delta * Math.PI / 180),
-					  radius * Math.sin(delta * Math.PI / 180)),
-		    "transform": SvgHelper.format("rotate(%)", node.layout["vbranch_from"]),
+		    "d": SvgHelper.format(
+			"M %,0  A %,% 0 %,1 %,%",
+			radius,
+			radius, radius,
+			(delta > 180) ? 1 : 0,
+			radius * Math.cos(delta * Math.PI / 180),
+			radius * Math.sin(delta * Math.PI / 180)
+		    ),
+		    "transform": SvgHelper.format(
+			"rotate(%)", node.layout["vbranch_from"]
+		    ),
 		});
 	    }
-	    function refreshCore(node) {
-		SvgHelper.transform(node.elements["core"],
-				    SvgHelper.format("rotate(%)  translate(%,0)",
-						     node.layout["joint"],
-						     node.layout["radius"]));
+	    function refreshHook(node) {
+		SvgHelper.transform(
+		    node.elements["hook"],
+		    SvgHelper.format(
+			"rotate(%)  translate(%,0)",
+			node.layout["joint"], node.layout["radius"]
+		    )
+		);
 	    }
 	    return {
 		init: init,
-		bindAdjuster: Binder.operator("adjustLayout", adjust),
+		adjust: adjust
 	    };
 	})();
 	// @layout @@unrooted
 	L.unrooted = (function(){
 	    function adjust(node) {
-		reloadChildren(node);
+		reloadSubnodes(node);
 	    }
 	    function init(root) {
 		count(root);
@@ -460,12 +471,12 @@ var WebTree = (function(){
 		dfs(root, insertToParent);
 		var maxDepth = 0;
 		root.attributes["depth"] = 0;
-		bfs(root.children, function(node){
+		bfs(root.subnodes, function(node){
 		    node.attributes["depth"] = node.parent.attributes["depth"] + node.layout["length"];
 		    maxDepth = Math.max(maxDepth, node.attributes["depth"]);
 		});
 		SvgHelper.transform(
-		    root.element, SvgHelper.format("translate(%, %)", maxDepth, maxDepth)
+		    root.elem, SvgHelper.format("translate(%, %)", maxDepth, maxDepth)
 		);
 	    }
 	    function calc(root) {
@@ -477,11 +488,11 @@ var WebTree = (function(){
 		refreshCapsule(node);
 		refreshBranchLine(node);
 		refreshBody(node);
-		refreshCore(node);		
+		refreshHook(node);		
 	    }
 	    function refreshCapsule(node) {
 		SvgHelper.transform(
-		    node.element,
+		    node.elem,
 		    SvgHelper.format("rotate(%)", node.layout["rotate"])
 		);
 	    }
@@ -490,30 +501,34 @@ var WebTree = (function(){
 		    node.elements["branch"],
 		    {
 			"d": SvgHelper.format("M 0,0  H %", node.layout["length"]),
-			"transform": SvgHelper.format("rotate(%)", node.layout["span"] / 2)
+			"transform": SvgHelper.format("rotate(%)", isLeaf(node) ? 0 : (node.layout["span"]/2)),
 		    }
 		);
 	    }
-	    function refreshCore(node) {
+	    function refreshHook(node) {
 		SvgHelper.transform(
-		    node.elements["core"],
-		    SvgHelper.format("rotate(%) translate(%,0)",
-				     node.layout["span"] / 2,
-				     node.layout["length"])
+		    node.elements["hook"],
+		    SvgHelper.format(
+			"rotate(%) translate(%,0)",
+			isLeaf(node) ? 0 : (node.layout["span"]/2),
+			node.layout["length"]
+		    )
 		);
 	    }
 	    function refreshBody(node) {
 		SvgHelper.transform(
 		    node.elements["body"],
-		    SvgHelper.format("rotate(%) translate(%,0) rotate(%)",
-				     node.layout["span"] / 2,
-				     node.layout["length"],
-				     - node.layout["span"] / 2)
+		    SvgHelper.format(
+			"rotate(%) translate(%,0) rotate(%)",
+			node.layout["span"] / 2,
+			node.layout["length"],
+			0 - node.layout["span"] / 2
+		    )
 		);
 	    }
 	    return {
 		init: init,
-		bindAdjuster: Binder.operator("adjustLayout", adjust),
+		adjust: adjust,
 	    };
 	})();
 	return L;
@@ -522,38 +537,25 @@ var WebTree = (function(){
     // @recipe
     var Recipes = {
 	"rectangular": {
-	    "node_config": {
+	    "layout": "rectangular",
+	    "config": {
 		"branch_unit": 5,
 	    },
-	    "node_pipeline": [Elements.standard, Base.dynamicViewer, Layout.rectangular.bindAdjuster, Appendages.button, Extensions.nodeFold], 
 	    "leaf_config": {
-		"branch_unit": 5,
 		"size": 32,
 	    },
-	    "leaf_pipeline": [Elements.standard, Base.dynamicViewer, Layout.rectangular.bindAdjuster, Appendages.label], 
-	    "tree_pipeline": [Layout.rectangular.init, Extensions.extBranch],
 	},
 	"circular": {
-	    "node_config": {
+	    "layout": "circular",
+	    "config": {
 		"branch_unit": 2,
 	    },
-	    "node_pipeline": [Elements.standard, Base.dynamicViewer, Layout.circular.bindAdjuster], 
-	    "leaf_config": {
-		"branch_unit": 2,
-	    },
-	    "leaf_pipeline": [Elements.standard, Base.dynamicViewer, Layout.circular.bindAdjuster, Appendages.label], 
-	    "tree_pipeline": [Layout.circular.init, Extensions.extBranch],
 	},
 	"unrooted": {
-	    "node_config": {
+	    "layout": "unrooted",
+	    "config": {
 		"branch_unit": 5,
 	    },
-	    "node_pipeline": [Elements.standard, Base.dynamicViewer, Layout.unrooted.bindAdjuster], 
-	    "leaf_config": {
-		"branch_unit": 5,
-	    },
-	    "leaf_pipeline": [Elements.standard, Base.dynamicViewer, Layout.unrooted.bindAdjuster, Appendages.label], 
-	    "tree_pipeline": [Layout.unrooted.init],
 	}
     };
 
@@ -562,6 +564,7 @@ var WebTree = (function(){
 	function pipelineToOperation(pipeline) {
 	    return function (obj) {
 		for (var proc of pipeline) {
+		    if (typeof proc != "function") debugger;
 		    proc(obj);
 		}
 	    };
@@ -571,10 +574,10 @@ var WebTree = (function(){
 	    var length = (descr["length"] != undefined) ? descr["length"] : data["branch_length"];
 	    length = (length != undefined) ? length : 1;
 	    data["branch_length"] = length;
-	    if (typeof descr["children"] == "object" && descr["children"].length > 0) {
+	    if (typeof descr["subnodes"] == "object" && descr["subnodes"].length > 0) {
 		var node = new Node(name, length, data);
-		for (var child of descr["children"]) {
-		    node.append(createTree(child));
+		for (var snode of descr["subnodes"]) {
+		    appendNode(node, createTree(snode));
 		}
 		return node;
 	    } else {
@@ -582,59 +585,60 @@ var WebTree = (function(){
 		return leaf;
 	    }
 	}
-	var processNode = pipelineToOperation(recipe["node_pipeline"]);
-	var processLeaf = pipelineToOperation(recipe["leaf_pipeline"]);
-	var initTree = pipelineToOperation(recipe["tree_pipeline"]);
+	var baseppl = [Elements.standard, Base.dynamicViewer];
+	var processNode = pipelineToOperation(baseppl.concat(recipe["node_pipeline"]));
+	var processLeaf = pipelineToOperation(baseppl.concat(recipe["leaf_pipeline"]));
+	var processTree = pipelineToOperation([Layout[recipe["layout"]].init].concat(recipe["tree_pipeline"]));
 	var root = createTree(descr);
 	var shareDict = {};
 	dfs(root, function(node){
 	    node.share = shareDict;
-	    node.config = recipe[(node.is_node ? "node_config" : "leaf_config")];
-	    (node.is_node ? processNode : processLeaf)(node);
+	    node.config = recipe[(isNode(node) ? "node_config" : "leaf_config")];
+	    (isNode(node) ? processNode : processLeaf)(node);
 	})
-	initTree(root);
+	processTree(root);
 	return root;
     }
-    
+
+    function deepcopy(obj) {
+	return JSON.parse(JSON.stringify(obj));
+    }
     return {
+	SvgHelper: SvgHelper,
 	DFS: dfs, BFS: bfs,
-	Binder: Binder,
-	Appendages: Appendages,
-	Extensions: Extensions,
 	Recipes: Recipes,
-	rectangular: function(descr) {
-	    return generateTree(descr, Recipes["rectangular"]);
+	rectangular: function(descr, config) {
+	    r = deepcopy(Recipes["rectangular"]);
+	    Object.assign(r.config, config);
+	    return this.load(descr, r);
 	},
-	circular: function(descr) {
-	    return generateTree(descr, Recipes["circular"]);
+	circular: function(descr, config) {
+	    r = deepcopy(Recipes["circular"]);
+	    Object.assign(r.config, config);
+	    return this.load(descr, r);
 	},
-	unrooted: function(descr) {
-	    return generateTree(descr, Recipes["unrooted"]);
+	unrooted: function(descr, config) {
+	    r = deepcopy(Recipes["unrooted"]);
+	    Object.assign(r.config, config);
+	    return this.load(descr, r);
 	},
 	load: function(tree_descr, raw_recipe) {
 	    var recipe = {};
-	    var layoutEngine = Layout[raw_recipe["layout"]];
-	    var pipeline = [].concat(
-		[Elements.standard, Base.dynamicViewer, layoutEngine.bindAdjuster],
-		(raw_recipe["pipeline"] || [])
-	    );
-	    recipe["node_config"] = Object.assign(
-		{
-		    "branch_unit": 10,
-		},
-		raw_recipe["config"],
-		raw_recipe["node_config"]
-	    );
-	    recipe["leaf_config"] = Object.assign(
-		{
-		    "branch_unit": 10,
-		},
-		raw_recipe["config"],
-		raw_recipe["leaf_config"]
-	    );
+	    recipe["layout"] = raw_recipe["layout"] || "rectangular"
+	    var pipeline = (raw_recipe["pipeline"] || []);
 	    recipe["node_pipeline"] = pipeline.concat((raw_recipe["node_pipeline"] || []));
 	    recipe["leaf_pipeline"] = pipeline.concat((raw_recipe["leaf_pipeline"] || []));
-	    recipe["tree_pipeline"] = [layoutEngine.init].concat((raw_recipe["tree_pipeline"] || []));
+	    recipe["tree_pipeline"] = (raw_recipe["tree_pipeline"] || [])
+	    var config = Object.assign(
+		{ "branch_unit": 10 },
+		raw_recipe["config"]
+	    )
+	    recipe["node_config"] = Object.assign({}, config,
+		raw_recipe["node_config"]
+	    );
+	    recipe["leaf_config"] = Object.assign({}, config,
+		raw_recipe["leaf_config"]
+	    );
 	    return generateTree(tree_descr, recipe);
 	},
 	expert: function(descr, recipe) {

@@ -1,0 +1,26 @@
+svg {
+    stroke: black;
+}
+
+text {
+    font-size: 1em;
+    pointer-events: none;
+    dominant-baseline: middle;
+}
+
+path {
+    fill: none;
+}
+
+line {
+    stroke: grey;
+}
+
+rect {
+    fill: white;
+}
+
+circle {
+    fill: white;
+    stroke: blue;
+}
