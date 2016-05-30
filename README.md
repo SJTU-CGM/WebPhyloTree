@@ -8,28 +8,36 @@ A Web-based embedable dynamic tree viewer. Process JSON into SVG. HTML and SVG. 
 
 ## Usage
 ### Beginning
-    var svgElem = document.getElementById("tree-container")
-    var root = WebTree.rectangular(document.rootElement, description)
-    svgElem.appendChild(root.elem)
+```javascript
+var svgElem = document.getElementById("tree-container")
+var root = WebTree.rectangular(document.rootElement, description)
+svgElem.appendChild(root.elem)
+```
 
 ### Advanced
-    var root = WebTree.rectangular(document.rootElement, description, {
-      "branch_unit": 10,
-      "leaf_size": 32,
-    })
+```javascript
+var root = WebTree.rectangular(document.rootElement, description, {
+  "branch_unit": 10,
+  "leaf_size": 32,
+})
+```
 
 ### Expert
-    var root = WebTree.rectangular(document.rootElement, description, {
-      layout: "rectangular",
-      node_pipline: [WebTree.Appendage.button],
-      leaf_pipline: [WebTree.Appendage.label, WebTree.Extension.rotateLabel],
-      config: {
-        "branch_unit": 10,
-        "leaf_size": 32,
-      },
-    });
+```javascript
+var root = WebTree.rectangular(document.rootElement, description, {
+  layout: "rectangular",
+  node_pipline: [WebTree.Appendage.button],
+  leaf_pipline: [WebTree.Appendage.label, WebTree.Extension.rotateLabel],
+  config: {
+    "branch_unit": 10,
+    "leaf_size": 32,
+  },
+});
+```
 
 ## See also
 As WebTree takes JSON as input, you may need a parser for Newick or phyloXML.  
-    parseNewick(String txt)  
+```javascript
+parseNewick(String::txt)  
+```
 https://github.com/KelvinLu1024/newick.js
