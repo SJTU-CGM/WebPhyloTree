@@ -1,7 +1,7 @@
 # WebTree
 A Web-based embedable dynamic tree viewer. Process JSON into SVG. HTML and SVG. Work out of box.
 
-## Supported Layout
+## Supported Layouts
 * Rectangular
 * Circular
 * Unrooted
@@ -23,14 +23,20 @@ It's assumed that the document is an svg file, for example,
 ```
 and a variable `description` is defined as something like
 ```javascript
-var description = { name: "E", length: 10,
-	                subnodes: [{ name: "D", length: 30,
-			                     subnodes: [{ name: "C", length: 20 },
-			                                { name: "B", length: 20 }] },
-                               { name: "A", length: 20 }] }
+var description = {
+	name: "E", length: 10,
+	subnodes: [
+		{ name: "D", length: 30,
+	      subnodes: [
+	          { name: "C", length: 20 },
+			  { name: "B", length: 20 }
+		  ] },
+        { name: "A", length: 20 }
+    ]
+};
 ```
 
-### Beginning
+### Beginner
 ```javascript
 var root = WebTree.rectangular(document.rootElement, description);
 ```
@@ -55,6 +61,7 @@ var root = WebTree.rectangular(document.rootElement, description, {
   },
 });
 ```
+__Note:__ if you works on a HTML, `document.rootElement` should be replace as a SVG container elements (e.g. <svg>, <g>).
 
 ## See also
 As WebTree takes JSON as input, you may need a parser for Newick or phyloXML.  
