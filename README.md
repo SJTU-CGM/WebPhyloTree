@@ -7,6 +7,29 @@ A Web-based embedable dynamic tree viewer. Process JSON into SVG. HTML and SVG. 
 * Unrooted
 
 ## Usage
+It's assumed that the document is an svg file, for example, 
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="style.css" type="text/css"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200px" height="1200px">
+  <script xlink:href="../webtree.js" type="text/javascript" />
+  <!--optional-->
+  <script xlink:href="../extension.js" type="text/javascript" />
+  <!--optional-->
+  <script xlink:href="../appendage.js" type="text/javascript" />
+  <!--example main.js-->
+  <script xlink:href="main.js" type="text/javascript" />
+</svg>
+```
+and a variable `description` is defined as something like
+```javascript
+var description = { name: "E", length: 10,
+	                subnodes: [{ name: "D", length: 30,
+			                     subnodes: [{ name: "C", length: 20 },
+			                                { name: "B", length: 20 }] },
+                               { name: "A", length: 20 }] }
+```
+
 ### Beginning
 ```javascript
 var root = WebTree.rectangular(document.rootElement, description);
