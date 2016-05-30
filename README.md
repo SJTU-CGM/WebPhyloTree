@@ -28,9 +28,9 @@ and a variable `description` is defined as something like
 var description = {
     name: "E", length: 10,
     subnodes: [ {name: "D", length: 30,
-		 subnodes: [ {name: "C", length: 20},
-			     {name: "B", length: 20} ]},
-		{name: "A", length: 20} ]
+                subnodes: [ {name: "C", length: 20},
+                            {name: "B", length: 20} ]},
+                {name: "A", length: 20} ]
 };
 ```
 
