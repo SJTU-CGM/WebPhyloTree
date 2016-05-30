@@ -55,7 +55,7 @@ var root = WebTree.rectangular(svgElement, description, {
 var root = WebTree.load(svgElement, description, {
   layout: "rectangular",
   node_modifiers: [WebTree.Appendage.button],
-  leaf_modifiers: [WebTree.Appendage.label, WebTree.Extension.rotateLabel],
+  leaf_modifiers: [WebTree.Appendage.label],
   config: {
     "branch_unit": 10,
     "leaf_size": 32,
