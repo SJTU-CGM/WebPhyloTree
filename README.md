@@ -12,14 +12,13 @@ This is a brief introduction which exhibits the most basic usages. For comprehen
 It's assumed that the document is an svg file, for example, 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet href="style.css" type="text/css"?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <script xlink:href="../webtree.js" type="text/javascript" />
   <!--optional-->
   <script xlink:href="../extension.js" type="text/javascript" />
   <!--optional-->
   <script xlink:href="../appendage.js" type="text/javascript" />
-  <!--example main.js-->
+  <!--put your code here-->
   <script xlink:href="main.js" type="text/javascript" />
 </svg>
 ```
