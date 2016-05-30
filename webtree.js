@@ -200,7 +200,7 @@ var WebTree = (function(){
     var Layout = (function(){
 	var L = {}
 	function calcLength(node) {
-	    node.layout["length"] = node.config["branch_unit"] * node.data["branch_length"];
+	    node.layout["length"] = node.config["branch_unit"] * node.length;
 	}
 	function calcShift(node) {
 	    node.layout["shift"] = node.layout["length"];
@@ -218,21 +218,22 @@ var WebTree = (function(){
 	    });
 	}
 	function setUnitDegree(root) {
-	    root.share["unit"] = 360 / root.layout["count"];
+	    var unit = 360 / root.layout["count"];
+	    dfs(root, function(node) {
+		node.layout["unit"] = unit;
+	    });
 	}
 	function calcRotate(node) {
 	    if (isNode(node)) {
-		if (node.subnodes == undefined)
-		    debugger;
 		var sum = 0;
 		for (var snode of node.subnodes) {
-		    snode.layout["rotate"] = sum * node.share["unit"];
+		    snode.layout["rotate"] = sum * node.layout["unit"];
 		    sum += snode.layout["count"];
 		}
 	    }
 	}
 	function calcSpan(node) {
-	    node.layout["span"] = node.layout["count"] * node.share["unit"];
+	    node.layout["span"] = node.layout["count"] * node.layout["unit"];
 	}
 	function insertToParent(node) {
 	    if (node.parent) {
@@ -390,7 +391,7 @@ var WebTree = (function(){
 		if (isLeaf(node) || node.subnodes.length == 0) {
 		    node.layout["vbranch_from"] = 0;
 		    node.layout["vbranch_to"] = 0;
-		    node.layout["joint"] = node.share["unit"] / 2;
+		    node.layout["joint"] = node.layout["unit"] / 2;
 		} else {
 		    var first = node.subnodes[0];
 		    var last = node.subnodes[node.subnodes.length-1];
@@ -466,7 +467,7 @@ var WebTree = (function(){
 		count(root);
 		setUnitDegree(root);
 		root.layout["rotate"] = 0;
-		root.data["branch_length"] = 0;
+		root.length = 0;
 		calc(root);
 		dfs(root, refresh);
 		dfs(root, insertToParent);
@@ -561,42 +562,48 @@ var WebTree = (function(){
     };
 
     // @generate
-    function generateTree(descr, recipe) {
-	function pipelineToOperation(pipeline) {
+    function generateTree(parentElement, descr, recipe) {
+	function modifiersToOperation(modifiers) {
 	    return function (obj) {
-		for (var proc of pipeline) {
+		for (var proc of modifiers) {
 		    if (typeof proc != "function") debugger;
 		    proc(obj);
 		}
 	    };
 	}
 	function createTree(descr) {
-	    var name = descr["name"], data = descr["data"] || {};
-	    var length = (descr["length"] != undefined) ? descr["length"] : data["branch_length"];
-	    length = (length != undefined) ? length : 1;
-	    data["branch_length"] = length;
-	    if (typeof descr["subnodes"] == "object" && descr["subnodes"].length > 0) {
+	    var name = descr["name"];
+	    var data = descr["data"] || {};
+	    var length = descr["length"] || data["branch_length"] || 0;
+	    if (descr["subnodes"] != undefined && descr["subnodes"].length > 0) {
 		var node = new Node(name, length, data);
+		node.config = recipe["node_config"];
+		processBase(node);
 		for (var snode of descr["subnodes"]) {
 		    appendNode(node, createTree(snode));
 		}
 		return node;
 	    } else {
 		var leaf = new Leaf(name, length, data);
+		leaf.config = recipe["leaf_config"];
+		processBase(leaf);
 		return leaf;
 	    }
 	}
-	var baseppl = [Elements.standard, Base.dynamicViewer];
-	var processNode = pipelineToOperation(baseppl.concat(recipe["node_pipeline"]));
-	var processLeaf = pipelineToOperation(baseppl.concat(recipe["leaf_pipeline"]));
-	var processTree = pipelineToOperation([Layout[recipe["layout"]].init].concat(recipe["tree_pipeline"]));
+	var processBase = modifiersToOperation( [Elements.standard, Base.dynamicViewer] );
+	var processNode = modifiersToOperation( recipe["node_modifiers"] );
+	var processLeaf = modifiersToOperation( recipe["leaf_modifiers"] );
+	var processTree = modifiersToOperation( recipe["tree_modifiers"] );
 	var root = createTree(descr);
-	var shareDict = {};
+	Layout[recipe["layout"]].init(root);
+	parentElement.appendChild(root.elem);
 	dfs(root, function(node){
-	    node.share = shareDict;
-	    node.config = recipe[(isNode(node) ? "node_config" : "leaf_config")];
-	    (isNode(node) ? processNode : processLeaf)(node);
-	})
+	    if (isNode(node)) {
+		processNode(node);
+	    } else {
+		processLeaf(node);
+	    }
+	});
 	processTree(root);
 	return root;
     }
@@ -607,29 +614,33 @@ var WebTree = (function(){
     return {
 	SvgHelper: SvgHelper,
 	DFS: dfs, BFS: bfs,
+	isLeaf: isLeaf,	isNode: isNode,
 	Recipes: Recipes,
-	rectangular: function(descr, config) {
+	rectangular: function(pelem, descr, config) {
 	    r = deepcopy(Recipes["rectangular"]);
 	    Object.assign(r.config, config);
-	    return this.load(descr, r);
+	    return this.load(pelem, descr, r);
 	},
-	circular: function(descr, config) {
+	circular: function(pelem, descr, config) {
 	    r = deepcopy(Recipes["circular"]);
 	    Object.assign(r.config, config);
-	    return this.load(descr, r);
+	    return this.load(pelem, descr, r);
 	},
-	unrooted: function(descr, config) {
+	unrooted: function(pelem, descr, config) {
 	    r = deepcopy(Recipes["unrooted"]);
 	    Object.assign(r.config, config);
-	    return this.load(descr, r);
+	    return this.load(pelem, descr, r);
 	},
-	load: function(tree_descr, raw_recipe) {
+	load: function(pelem, tree_descr, raw_recipe) {
 	    var recipe = {};
+	    // layout
 	    recipe["layout"] = raw_recipe["layout"] || "rectangular"
-	    var pipeline = (raw_recipe["pipeline"] || []);
-	    recipe["node_pipeline"] = pipeline.concat((raw_recipe["node_pipeline"] || []));
-	    recipe["leaf_pipeline"] = pipeline.concat((raw_recipe["leaf_pipeline"] || []));
-	    recipe["tree_pipeline"] = (raw_recipe["tree_pipeline"] || [])
+	    // modifiers
+	    var modifiers = (raw_recipe["modifiers"] || []);
+	    recipe["node_modifiers"] = modifiers.concat((raw_recipe["node_modifiers"] || []));
+	    recipe["leaf_modifiers"] = modifiers.concat((raw_recipe["leaf_modifiers"] || []));
+	    recipe["tree_modifiers"] = (raw_recipe["tree_modifiers"] || []);
+	    // config
 	    var config = Object.assign(
 		{ "branch_unit": 10 },
 		raw_recipe["config"]
@@ -640,10 +651,7 @@ var WebTree = (function(){
 	    recipe["leaf_config"] = Object.assign({}, config,
 		raw_recipe["leaf_config"]
 	    );
-	    return generateTree(tree_descr, recipe);
-	},
-	expert: function(descr, recipe) {
-	    return generateTree(descr, recipe);
+	    return generateTree(pelem, tree_descr, recipe);
 	}
     }
 })()
