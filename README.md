@@ -9,9 +9,7 @@ A Web-based embedable dynamic tree viewer. Process JSON into SVG. HTML and SVG. 
 ## Usage
 ### Beginning
 ```javascript
-var svgElem = document.getElementById("tree-container")
-var root = WebTree.rectangular(document.rootElement, description)
-svgElem.appendChild(root.elem)
+var root = WebTree.rectangular(document.rootElement, description);
 ```
 
 ### Advanced
@@ -19,7 +17,7 @@ svgElem.appendChild(root.elem)
 var root = WebTree.rectangular(document.rootElement, description, {
   "branch_unit": 10,
   "leaf_size": 32,
-})
+});
 ```
 
 ### Expert
