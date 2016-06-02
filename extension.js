@@ -68,6 +68,13 @@
 			node.unselect();
 		}
 	    }
+	},
+	getNodeByName: function(root) {
+	    var map = {};
+	    WT.DFS(root, function(node){
+		map[node.name] = node;
+		node.getNodeByName = function(name) { return map[name]; }
+	    });
 	}
     }
 })(WebTree);
