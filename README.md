@@ -67,7 +67,7 @@ var root = WebTree.load(svgElement, description, {
 __Note:__ if you works on a HTML, `svgElement` should be replaced by a SVG container elements (e.g. `<svg>`, `<g>`).
 
 ## See also
-As WebTree takes JSON as input, you may need a parser for Newick or phyloXML.  
+As WebTree takes JSON as input, you may need a parser for Newick.  
 ```javascript
 parseNewick(String::txt)  
 ```
