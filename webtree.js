@@ -192,7 +192,6 @@ var WebTree = (function(){
 	},
 	dynamicViewer: function(node) {
 	    Base.viewer(node);
-	    node.attributes = {};
 	},
     };
 
@@ -472,10 +471,10 @@ var WebTree = (function(){
 		dfs(root, refresh);
 		dfs(root, insertToParent);
 		var maxDepth = 0;
-		root.attributes["depth"] = 0;
+		root.layout["depth"] = 0;
 		bfs(root.subnodes, function(node){
-		    node.attributes["depth"] = node.parent.attributes["depth"] + node.layout["length"];
-		    maxDepth = Math.max(maxDepth, node.attributes["depth"]);
+		    node.layout["depth"] = node.parent.layout["depth"] + node.layout["length"];
+		    maxDepth = Math.max(maxDepth, node.layout["depth"]);
 		});
 		SvgHelper.transform(
 		    root.elem, SvgHelper.format("translate(%, %)", maxDepth*0.8, maxDepth*0.8)
