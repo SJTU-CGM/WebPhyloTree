@@ -3,8 +3,16 @@ var WebTree = (function(){
 	function apply(func, arr) {
 	    return func.apply(null, arr);
 	}
+	function createTransform(elem) {
+	    return elem.ownerSVGElement.createSVGTransform();
+	}
 	var SH = {
 	    xmlns: "http://www.w3.org/2000/svg",
+	    translate: function (elem, x, y) {
+		var trans = createSVGTransform(elem);
+		trans.setTranslate(x, y);
+		elem.transform.baseVal.appendItem(trans);
+	    }
 	    transform: function (elem, txt) {
 		SH.attr(elem, { "transform": txt });
 	    },
@@ -476,6 +484,17 @@ var WebTree = (function(){
 		    node.layout["depth"] = node.parent.layout["depth"] + node.layout["length"];
 		    maxDepth = Math.max(maxDepth, node.layout["depth"]);
 		});
+		var lef, top;
+		dfs(root, function(node) {
+		    if (isLeaf(root)) {
+			var m = root.elements["hook"].getCTM();
+			var x = m.e;
+			var y = m.f;
+			lef = (lef == undefined || x < lef) ? x : lef;
+			top = (top == undefined || y < top) ? y : top;
+		    }
+		});
+		SvgHelper.translate(root.elem, x, y);
 	    }
 	    function calc(root) {
 		bfs([root], calcRotate);
