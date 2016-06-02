@@ -494,7 +494,7 @@ var WebTree = (function(){
 			top = (top == undefined || y < top) ? y : top;
 		    }
 		});
-		SvgHelper.translate(root.elem, -lef, -top);
+		SvgHelper.translate(root.elem, -lef + 16, -top + 16);
 	    }
 	    function calc(root) {
 		bfs([root], calcRotate);
