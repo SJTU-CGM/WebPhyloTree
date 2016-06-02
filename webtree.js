@@ -3,13 +3,14 @@ var WebTree = (function(){
 	function apply(func, arr) {
 	    return func.apply(null, arr);
 	}
-	function createTransform(elem) {
-	    return elem.ownerSVGElement.createSVGTransform();
+	function createTransform() {
+	    return document.querySelector("svg").createSVGTransform();
 	}
 	var SH = {
 	    xmlns: "http://www.w3.org/2000/svg",
 	    translate: function (elem, x, y) {
-		var trans = createSVGTransform(elem);
+		var trans = createTransform();
+		if (isNaN(x)) debugger;
 		trans.setTranslate(x, y);
 		elem.transform.baseVal.appendItem(trans);
 	    },
@@ -486,15 +487,14 @@ var WebTree = (function(){
 		});
 		var lef, top;
 		dfs(root, function(node) {
-		    if (isLeaf(root)) {
-			var m = root.elements["hook"].getCTM();
-			var x = m.e;
-			var y = m.f;
+		    if (isLeaf(node)) {
+			var m = node.elements["hook"].getCTM();
+			var x = m.e, y = m.f;
 			lef = (lef == undefined || x < lef) ? x : lef;
 			top = (top == undefined || y < top) ? y : top;
 		    }
 		});
-		SvgHelper.translate(root.elem, x, y);
+		SvgHelper.translate(root.elem, -lef, -top);
 	    }
 	    function calc(root) {
 		bfs([root], calcRotate);
