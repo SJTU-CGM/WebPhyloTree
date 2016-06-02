@@ -476,9 +476,6 @@ var WebTree = (function(){
 		    node.layout["depth"] = node.parent.layout["depth"] + node.layout["length"];
 		    maxDepth = Math.max(maxDepth, node.layout["depth"]);
 		});
-		SvgHelper.transform(
-		    root.elem, SvgHelper.format("translate(%, %)", maxDepth*0.8, maxDepth*0.8)
-		);
 	    }
 	    function calc(root) {
 		bfs([root], calcRotate);
