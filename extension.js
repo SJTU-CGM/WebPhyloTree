@@ -61,11 +61,11 @@
 	    } else {
 		node.select = function() {
 		    for (var sub of node.subnodes)
-			node.select();
+			sub.select();
 		}
 		node.unselect = function () {
 		    for (var sub of node.subnodes)
-			node.unselect();
+			sub.unselect();
 		}
 	    }
 	},
