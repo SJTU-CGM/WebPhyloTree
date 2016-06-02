@@ -49,6 +49,25 @@
 		    leaf.elements["label"].transform.baseVal.appendItem(trans);
 		}
 	    }
+	},
+	select: function(node) {
+	    if (node.subnodes == undefined) { // is leaf
+		node.select = function() {
+		    node.elem.classList.add('selected');
+		};
+		node.unselect = function() {
+		    node.elem.classList.remove('selected');
+		};
+	    } else {
+		node.select = function() {
+		    for (var sub of node.subnodes)
+			node.select();
+		}
+		node.unselect = function () {
+		    for (var sub of node.subnodes)
+			node.unselect();
+		}
+	    }
 	}
     }
 })(WebTree);
