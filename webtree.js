@@ -12,7 +12,7 @@ var WebTree = (function(){
 		var trans = createSVGTransform(elem);
 		trans.setTranslate(x, y);
 		elem.transform.baseVal.appendItem(trans);
-	    }
+	    },
 	    transform: function (elem, txt) {
 		SH.attr(elem, { "transform": txt });
 	    },
