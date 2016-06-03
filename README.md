@@ -17,7 +17,10 @@ a collection of functions that add extra elements onto the tree, for example, la
 a collection of functions that do extra works like extending leaf branches. 
 
 ## Usage
-It's assumed that the document is an svg file, for example, 
+(Codes below are included in `example/`)  
+It's assumed that the document is either an HTML or SVG, for example, 
+```
+```
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
