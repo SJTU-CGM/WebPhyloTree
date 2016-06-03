@@ -1,7 +1,7 @@
 # WebTree
-An embedable tree viewer implemented as a JavaScript library. It takes JSON as input and works on both HTML and SVG.  
+Extensible tree viewer implemented with JavaScript, works on HTML and SVG.  
 
-This is a brief introduction which exhibits the most basic usages. For comprehensive information, please visit the [Wiki page](https://github.com/KelvinLu1024/WebTree/wiki).
+This is a brief introduction. For information on configuration and extension, please visit the [Wiki page](https://github.com/KelvinLu1024/WebTree/wiki).
 
 ## Supported Layouts
 * Rectangular
