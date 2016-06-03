@@ -289,10 +289,10 @@ var WebTree = (function(){
 	    }
 	    function calcBody(node) {
 		if (isLeaf(node)) {
-		    node.layout["size"] = node.config["size"] != undefined ? node.config["size"] : 32;
+		    node.layout["size"] = node.config["leaf_size"];
 		} else {
 		    if (node.subnodes.length == 0) {
-			node.layout["size"] = node.config["folded_size"] != undefined ? node.config["folded_size"] : 32;
+			node.layout["size"] = node.config["leaf_size"];
 		    } else {
 			var size = 0;
 			for (var snode of node.subnodes) {
@@ -557,22 +557,20 @@ var WebTree = (function(){
 	"rectangular": {
 	    "layout": "rectangular",
 	    "config": {
-		"branch_unit": 10,
-	    },
-	    "leaf_config": {
-		"size": 32,
+		"branch_unit": 4,
+		"leaf_size": 32,
 	    },
 	},
 	"circular": {
 	    "layout": "circular",
 	    "config": {
-		"branch_unit": 6,
+		"branch_unit": 3,
 	    },
 	},
 	"unrooted": {
 	    "layout": "unrooted",
 	    "config": {
-		"branch_unit": 10,
+		"branch_unit": 5,
 	    },
 	}
     };
@@ -588,12 +586,12 @@ var WebTree = (function(){
 	    };
 	}
 	function createTree(descr) {
-	    var name = descr["name"];
+	    var name = descr["name"] || "";
 	    var data = descr["data"] || {};
 	    var length = descr["length"] || data["branch_length"] || 0;
-	    if (descr["subnodes"] != undefined && descr["subnodes"].length > 0) {
+	    if (descr["subnodes"]) {
 		var node = new Node(name, length, data);
-		node.config = recipe["node_config"];
+		node.config = recipe["config"];
 		processBase(node);
 		for (var snode of descr["subnodes"]) {
 		    appendNode(node, createTree(snode));
@@ -601,7 +599,7 @@ var WebTree = (function(){
 		return node;
 	    } else {
 		var leaf = new Leaf(name, length, data);
-		leaf.config = recipe["leaf_config"];
+		leaf.config = recipe["config"];
 		processBase(leaf);
 		return leaf;
 	    }
@@ -657,16 +655,11 @@ var WebTree = (function(){
 	    recipe["leaf_modifiers"] = modifiers.concat((raw_recipe["leaf_modifiers"] || []));
 	    recipe["tree_modifiers"] = (raw_recipe["tree_modifiers"] || []);
 	    // config
-	    var config = Object.assign(
-		{ "branch_unit": 10 },
+	    recipe["config"] = Object.assign(
+		{},
+		Recipes[recipe["layout"]]["config"],		       
 		raw_recipe["config"]
 	    )
-	    recipe["node_config"] = Object.assign({}, config,
-		raw_recipe["node_config"]
-	    );
-	    recipe["leaf_config"] = Object.assign({}, config,
-		raw_recipe["leaf_config"]
-	    );
 	    return generateTree(pelem, tree_descr, recipe);
 	}
     }
