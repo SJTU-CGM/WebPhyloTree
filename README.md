@@ -82,7 +82,7 @@ var root = WebTree.rectangular(svgElement, description, {
 
 ### Expert
 ```javascript
-// modify the nodes and leaves (add buttons and labels)
+// add buttons for internal nodes and labels for leaves
 var root = WebTree.load(svgElement, description, {
   layout: "rectangular",
   node_modifiers: [WebTree.Appendage.button],
