@@ -23,8 +23,9 @@ var WebTree = (function(){
 		for (i = j = 0; i < pattern.length; i++) {
 		    if (pattern[i] == "%") {
 			j += 1;
-			if (arguments[j] == undefined || isNaN(arguments[j]))
-			    debugger;
+			/* if (arguments[j] == undefined
+			    || isNaN(arguments[j]))
+			    debugger; */
 			str += arguments[j];
 		    } else {
 			str += pattern[i];

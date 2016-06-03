@@ -19,17 +19,36 @@ a collection of functions that do extra works like extending leaf branches.
 ## Usage
 (Codes below are included in `example/`)  
 It's assumed that the document is either an HTML or SVG, for example, 
-```
+```html
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <script src="../webtree.js" type="text/javascript"></script>
+    <!--optional-->
+    <script src="../extension.js" type="text/javascript"></script>
+    <!--optional-->
+    <script src="../appendage.js" type="text/javascript"></script>
+    <!--example main.js-->
+  </head>
+  <body>
+    <svg style="stroke:black; fill:grey;" width="1200" height="1200" />
+    <script src="main.js" type="text/javascript"></script>
+  </body>
+</html>
 ```
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     stroke="black" fill="grey"
+     width="1200" height="1200">
   <script xlink:href="../webtree.js" type="text/javascript" />
   <!--optional-->
   <script xlink:href="../extension.js" type="text/javascript" />
   <!--optional-->
   <script xlink:href="../appendage.js" type="text/javascript" />
-  <!--put your code here-->
+  <!--example main.js-->
   <script xlink:href="main.js" type="text/javascript" />
 </svg>
 ```
