@@ -18,7 +18,7 @@ a collection of functions that do extra works like extending leaf branches.
 
 ## Usage
 (Codes below are included in `example/`)  
-It's assumed that the document is either an HTML or SVG, for example, 
+It's assumed that the document is either an HTML or XML, see examples below.
 ```html
 <!DOCTYPE html>
 
