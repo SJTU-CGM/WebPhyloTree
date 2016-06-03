@@ -8,6 +8,14 @@ This is a brief introduction. For information on configuration and extension, pl
 * Circular
 * Unrooted
 
+## Install
+WebTree library is divided into 3 files: `webtree.js`, `appendage.js` and `extension.js`  
+* `webtree.js` **core**. 
+* `appendage.js` **optional**  
+a collection of functions that add extra elements onto the tree, for example, labels and buttons. 
+* `extension.js` **optional**  
+a collection of functions that do extra works like extending leaf branches. 
+
 ## Usage
 It's assumed that the document is an svg file, for example, 
 ```xml
@@ -46,8 +54,7 @@ var root = WebTree.rectangular(svgElement, description);
 ```javascript
 // overwrite default configs
 var root = WebTree.rectangular(svgElement, description, {
-  "branch_unit": 20,
-  "leaf_size": 40,
+  "branch_unit": 20
 });
 ```
 
@@ -59,8 +66,7 @@ var root = WebTree.load(svgElement, description, {
   node_modifiers: [WebTree.Appendage.button],
   leaf_modifiers: [WebTree.Appendage.label],
   config: {
-    "branch_unit": 10,
-    "leaf_size": 32,
+    "branch_unit": 10
   },
 });
 ```
