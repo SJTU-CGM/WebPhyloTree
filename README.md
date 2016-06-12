@@ -41,11 +41,8 @@ It's assumed that the document is either an HTML or XML, see examples below.
      stroke="black" fill="grey"
      width="1200" height="1200">
   <script xlink:href="../webtree.js" type="text/javascript" />
-  <!--optional-->
   <script xlink:href="../extension.js" type="text/javascript" />
-  <!--optional-->
   <script xlink:href="../appendage.js" type="text/javascript" />
-  <!--example main.js-->
   <script xlink:href="main.js" type="text/javascript" />
 </svg>
 ```
