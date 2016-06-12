@@ -1,7 +1,7 @@
 # WebTree
 Extensible tree viewer implemented with JavaScript, works on HTML and SVG.  
 
-This is a brief introduction. For information on configuration and extension, please visit the [Wiki page](https://github.com/KelvinLu1024/WebTree/wiki).
+This is a brief introduction. For comprehensive information on configuration and extensions, please visit our [Wiki page](https://github.com/KelvinLu1024/WebTree/wiki).
 
 ## Supported Layouts
 * Rectangular
@@ -9,15 +9,15 @@ This is a brief introduction. For information on configuration and extension, pl
 * Unrooted
 
 ## Install
-WebTree library is divided into 3 files: `webtree.js`, `appendage.js` and `extension.js`  
+WebTree library is divided into 3 sublibraries: `webtree.js`, `appendage.js` and `extension.js`  
 * `webtree.js` **core**. 
 * `appendage.js` **optional**  
-a collection of functions that add extra elements onto the tree, for example, labels and buttons. 
+a collection of functions that add extra elements onto the tree (e.g. labels and buttons). 
 * `extension.js` **optional**  
-a collection of functions that do extra works like extending leaf branches. 
+a collection of functions that do extra works (e.g. extending leaf branches). 
 
 ## Usage
-(Codes below are included in `example/`)  
+(Codes showed below are included in `example/`)  
 It's assumed that the document is either an HTML or XML, see examples below.
 ```html
 <!DOCTYPE html>
@@ -25,11 +25,8 @@ It's assumed that the document is either an HTML or XML, see examples below.
 <html>
   <head>
     <script src="../webtree.js" type="text/javascript"></script>
-    <!--optional-->
     <script src="../extension.js" type="text/javascript"></script>
-    <!--optional-->
     <script src="../appendage.js" type="text/javascript"></script>
-    <!--example main.js-->
   </head>
   <body>
     <svg style="stroke:black; fill:grey;" width="1200" height="1200" />
