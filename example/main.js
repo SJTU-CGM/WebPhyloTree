@@ -9,11 +9,13 @@ var description = {
 };
 
 
-var svgElement = document.rootElement;
+var svgElement = document.getElementsByTagName("svg")[0];
 
-/* Beginner 
+/* Beginner */
 var root = WebTree.rectangular(svgElement, description);
-*/
+//var root = WebTree.circular(svgElement, description);
+//var root = WebTree.unrooted(svgElement, description);
+
 
 /* Advanced 
 var root = WebTree.rectangular(svgElement, description, {
@@ -22,7 +24,7 @@ var root = WebTree.rectangular(svgElement, description, {
 });
 */
 
-/* Expert */
+/* Expert 
 var root = WebTree.load(svgElement, description, {
     layout: "rectangular",
     node_modifiers: [WebTree.Appendage.button],
@@ -32,4 +34,4 @@ var root = WebTree.load(svgElement, description, {
 	"leaf_size": 32,
     },
 });
-
+*/

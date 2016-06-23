@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet href="style.css" type="text/css"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="1200">
+
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="800" height="800">
+  
+  <style type="text/css">
+    svg { stroke:black; fill:grey; }
+    path { fill: none; }
+  </style>
   <script xlink:href="../webtree.js" type="text/javascript" />
   <!--optional-->
   <script xlink:href="../extension.js" type="text/javascript" />
