@@ -25,8 +25,8 @@ It's assumed that the document is either an HTML or XML, see examples below.
 <html>
   <head>
     <script src="../webtree.js" type="text/javascript"></script>
-    <script src="../extension.js" type="text/javascript"></script>
-    <script src="../appendage.js" type="text/javascript"></script>
+    <!--<script src="../extension.js" type="text/javascript"></script>-->
+    <!--<script src="../appendage.js" type="text/javascript"></script>-->
   </head>
   <body>
     <svg style="stroke:black; fill:grey;" width="1200" height="1200" />
@@ -41,8 +41,8 @@ It's assumed that the document is either an HTML or XML, see examples below.
      stroke="black" fill="grey"
      width="1200" height="1200">
   <script xlink:href="../webtree.js" type="text/javascript" />
-  <script xlink:href="../extension.js" type="text/javascript" />
-  <script xlink:href="../appendage.js" type="text/javascript" />
+  <!--<script xlink:href="../extension.js" type="text/javascript" />-->
+  <!--<script xlink:href="../appendage.js" type="text/javascript" />-->
   <script xlink:href="main.js" type="text/javascript" />
 </svg>
 ```
