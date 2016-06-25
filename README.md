@@ -1,7 +1,7 @@
 # WebTree
 Extensible tree viewer implemented with JavaScript, works on HTML and SVG.  
 
-This is a brief introduction. For comprehensive information on configuration and extensions, please visit our [Wiki page](https://github.com/KelvinLu1024/WebTree/wiki).
+This is a brief introduction. For comprehensive information on configuration and writing addo-ons, please visit our [Wiki page](https://github.com/KelvinLu1024/WebTree/wiki).
 
 ## Supported Layouts
 * Rectangular
@@ -9,7 +9,7 @@ This is a brief introduction. For comprehensive information on configuration and
 * Unrooted
 
 ## Install
-WebTree library is divided into 3 sublibraries: `webtree.js`, `appendage.js` and `extension.js`  
+WebTree is divided into 3 sublibraries: `webtree.js`, `appendage.js` and `extension.js`  
 * `webtree.js` **core**. 
 * `appendage.js` **optional**  
 a collection of functions that add extra elements onto the tree (e.g. labels and buttons). 
@@ -75,6 +75,7 @@ var root = WebTree.rectangular(svgElement, description, {
 ```
 
 ### Expert
+(`appendages.js` is required)
 ```javascript
 // add buttons for internal nodes and labels for leaves
 var root = WebTree.load(svgElement, description, {
