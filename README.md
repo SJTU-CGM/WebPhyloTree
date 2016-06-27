@@ -46,30 +46,37 @@ It's assumed that the document is either an HTML or XML, see examples below.
   <script xlink:href="main.js" type="text/javascript" />
 </svg>
 ```
-and a variable `description` is defined as something like
+variable `container` is defined as an element and variable `description` is defined as something like
 ```javascript
 // name: name of node (optional)
 // length: branch length
 var description = {
-    name: "E", length: 10,
-    subnodes: [ {name: "D", length: 30,
-                subnodes: [ {name: "C", length: 20},
-                            {name: "B", length: 20} ]},
-                {name: "A", length: 20} ]
+  name: "E", length: 10,
+  subnodes: [
+    { name: "D", length: 30,
+      subnodes: [
+        { name: "C", length: 20 },
+        { name: "B", length: 20 }
+      ]
+    },
+    { name: "A", length: 20 }
+  ]
 };
 ```
 
 ### Beginner
 ```javascript
-// draw a rectangular tree in <svg>
-var svgElement = document.rootElement;
-var root = WebTree.rectangular(svgElement, description);
+// draw a rectangular tree
+var tree = WebTree.rectangular(svgElement, description);
+var root = tree["root"];
+var elem = tree["element"];
+container.appendChild(elem);
 ```
 
 ### Advanced
 ```javascript
 // overwrite default configs
-var root = WebTree.rectangular(svgElement, description, {
+var tree = WebTree.rectangular(svgElement, description, {
   "branch_unit": 20
 });
 ```
@@ -78,7 +85,7 @@ var root = WebTree.rectangular(svgElement, description, {
 (`appendages.js` is required)
 ```javascript
 // add buttons for internal nodes and labels for leaves
-var root = WebTree.load(svgElement, description, {
+var tree = WebTree.load(svgElement, description, {
   layout: "rectangular",
   node_modifiers: [WebTree.Appendage.button],
   leaf_modifiers: [WebTree.Appendage.label],
