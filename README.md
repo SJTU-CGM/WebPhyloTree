@@ -68,6 +68,7 @@ var description = {
 ```javascript
 // draw a rectangular tree
 var tree = WebTree.rectangular(svgElement, description);
+
 var root = tree["root"];
 var elem = tree["element"];
 container.appendChild(elem);
@@ -79,6 +80,10 @@ container.appendChild(elem);
 var tree = WebTree.rectangular(svgElement, description, {
   "branch_unit": 20
 });
+
+var root = tree["root"];
+var elem = tree["element"];
+container.appendChild(elem);
 ```
 
 ### Expert
@@ -93,6 +98,10 @@ var tree = WebTree.load(svgElement, description, {
     "branch_unit": 10
   },
 });
+
+var root = tree["root"];
+var elem = tree["element"];
+container.appendChild(elem);
 ```
 __Note:__ if you works on a HTML, `svgElement` should be replaced by a SVG container elements (e.g. `<svg>`, `<g>`).
 
