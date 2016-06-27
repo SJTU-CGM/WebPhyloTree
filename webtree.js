@@ -3,13 +3,39 @@ var WebTree = (function(){
     function apply(func, arr) {
       return func.apply(null, arr);
     }
-    function createTransform() {
-      return SH.create("svg").createSVGTransform();
-    }
     var SH = {
       xmlns: "http://www.w3.org/2000/svg",
+      error: function (msg) {
+        throw "SvgHelper: " + msg;
+      },
+      createTransform: function () {
+        return SH.create("svg").createSVGTransform();
+      },
+      createMatrix: function () {
+        return SH.create("svg").createSVGMatrix()
+      },
+      getRTM: function(sour, term) {
+        var path = [];
+        while (term != sour && term != null) {
+          path.unshift(term);
+          term = term.parentElement;
+        }
+        if (term == null) {
+          SH.error("Terminal is not a decendance of source");
+        } else {
+          var m = SH.createMatrix();
+          for (var elem of path) {
+            var n = SH.createMatrix();
+            for (var trans of Array.from(elem.transform.baseVal)) {
+              n = n.multiply(trans.matrix);
+            }
+            m = m.multiply(n);
+          }
+          return m
+        }
+      },
       translate: function (elem, x, y) {
-        var trans = createTransform();
+        var trans = SH.createTransform();
         if (isNaN(x)) debugger;
         trans.setTranslate(x, y);
         elem.transform.baseVal.appendItem(trans);
@@ -480,24 +506,19 @@ var WebTree = (function(){
         calc(root);
         dfs(root, refresh);
         dfs(root, insertToParent);
-        // var maxDepth = 0;
-        // root.layout["depth"] = 0;
-        // bfs(root.subnodes, function(node){
-        //   node.layout["depth"] = node.parent.layout["depth"] + node.layout["length"];
-        //   maxDepth = Math.max(maxDepth, node.layout["depth"]);
-        // });
         var lef, top;
-        dfs(root, function(node) {
+        dfs(root, function (node) {
           if (isLeaf(node)) {
-            var m = node.elements["hook"].getCTM();
-            if (m == undefined) {
+            if (node.elem == undefined) {
               debugger;
             }
-            var x = m.e, y = m.f;
+            var m = SvgHelper.getRTM(root.elem, node.elements["hook"]);
+            var x = m.e;
+            var y = m.f;
             lef = (lef == undefined || x < lef) ? x : lef;
             top = (top == undefined || y < top) ? y : top;
           }
-        });
+        })
         SvgHelper.translate(root.elem, -lef, -top);
       }
       function calc(root) {
@@ -607,6 +628,7 @@ var WebTree = (function(){
       Elements.standard(node);
       Base.dynamicViewer(node);
       node.config = recipe["config"];
+      node.root = root;
     })
     parentElement.appendChild(root.elem);
     Layout[recipe["layout"]].init(root);
@@ -630,38 +652,39 @@ var WebTree = (function(){
     DFS: dfs, BFS: bfs,
     isLeaf: isLeaf,	isNode: isNode,
     Recipes: Recipes,
-    rectangular: function(pelem, descr, config) {
+    rectangular: function(descr, config) {
       r = deepcopy(Recipes["rectangular"]);
       Object.assign(r.config, config);
-      return this.load(pelem, descr, r);
+      return this.load(descr, r);
     },
-    circular: function(pelem, descr, config) {
+    circular: function(descr, config) {
       r = deepcopy(Recipes["circular"]);
       Object.assign(r.config, config);
-      return this.load(pelem, descr, r);
+      return this.load(descr, r);
     },
-    unrooted: function(pelem, descr, config) {
+    unrooted: function(descr, config) {
       r = deepcopy(Recipes["unrooted"]);
       Object.assign(r.config, config);
-      return this.load(pelem, descr, r);
+      return this.load(descr, r);
     },
-    load: function(pelem, tree_descr, raw_recipe) {
+    load: function(tree_descr, raw_recipe) {
+      // raw_recipe ==> recipe
       var recipe = {};
-      // layout
       recipe["layout"] = raw_recipe["layout"] || "rectangular"
-      // modifiers
       var modifiers = (raw_recipe["modifiers"] || []);
       recipe["node_modifiers"] = modifiers.concat((raw_recipe["node_modifiers"] || []));
       recipe["leaf_modifiers"] = modifiers.concat((raw_recipe["leaf_modifiers"] || []));
-      // config
       recipe["config"] = Object.assign({},
         Recipes[recipe["layout"]]["config"],
         raw_recipe["config"]
       )
+      // container
       var svgElem = SvgHelper.create("svg");
-      pelem.appendChild(svgElem);
-      var tree = generateTree(svgElem, tree_descr, recipe);
-      return tree;
+      var root = generateTree(svgElem, tree_descr, recipe);
+      return {
+        "element": svgElem,
+        "root": root
+      };
     }
   }
 })()

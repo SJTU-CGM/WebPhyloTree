@@ -37,8 +37,8 @@
     },
     rotateLabel: function(leaf) {
       if (leaf.subnodes == undefined) {
-        var CTM = leaf.elements["hook"].getCTM();
-        if (CTM.a < 0) {
+        var m = WebTree.SvgHelper.getRTM(leaf.root.elem, leaf.elements["hook"]);
+        if (m.a < 0) {
           var label = leaf.elements["label"];
           var BOX = label.getBBox();
           var trans = document.querySelector("svg").createSVGTransform();
