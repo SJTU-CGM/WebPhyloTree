@@ -106,8 +106,5 @@ container.appendChild(elem);
 __Note:__ if you works on a HTML, `svgElement` should be replaced by a SVG container elements (e.g. `<svg>`, `<g>`).
 
 ## See also
-As WebTree takes JSON as input, you may need a parser for Newick.  
-```javascript
-parseNewick(String::txt)  
-```
-https://github.com/KelvinLu1024/newick.js
+As WebTree takes JSON as input, you may need [a parser for Newick](
+https://github.com/KelvinLu1024/newick.js).
