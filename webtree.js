@@ -1,5 +1,5 @@
-var WebTree = (function(){
-  var SvgHelper = (function(){
+var WebTree = (function(){      
+  var SvgHelper = (function(){  
     function apply(func, arr) {
       return func.apply(null, arr);
     }
@@ -50,8 +50,8 @@ var WebTree = (function(){
           if (pattern[i] == "%") {
             j += 1;
             /* if (arguments[j] == undefined
-            || isNaN(arguments[j]))
-            debugger; */
+               || isNaN(arguments[j]))
+               debugger; */
             str += arguments[j];
           } else {
             str += pattern[i];
@@ -69,8 +69,9 @@ var WebTree = (function(){
       attr: function (elem, descr) {
         for (var attr in descr) {
           var val = descr[attr];
-          if (val == undefined || elem == undefined || elem.setAttributeNS == undefined)
-          debugger;
+          if (val == undefined || elem == undefined ||
+              elem.setAttributeNS == undefined)
+            debugger;
           elem.setAttributeNS(null, attr, val);
         }
         return elem;
@@ -133,7 +134,7 @@ var WebTree = (function(){
   function dfs(node, func) {
     if (isNode(node)) {
       if (node.subnodes == undefined)
-      debugger;
+        debugger;
       for (var snode of node.subnodes) {
         dfs(snode, func);
       }
@@ -193,12 +194,18 @@ var WebTree = (function(){
       node.elements["body"] = body;
     }
     function addBranchLineElement(node) {
-      var brch = SvgHelper.path();
+	  var brch = SvgHelper.path();
+	  SvgHelper.attr(brch, {
+	    "fill": "none"
+	  });
       node.elem.appendChild(brch);
       node.elements["branch"] = brch;
     }
     function addVBranchLineElement(node) {
       var vbrch = SvgHelper.path();
+	  SvgHelper.attr(vbrch, {
+	    "fill": "none"
+	  });
       node.elem.appendChild(vbrch);
       node.elements["vbranch"] = vbrch;
     }
@@ -674,10 +681,11 @@ var WebTree = (function(){
       var modifiers = (raw_recipe["modifiers"] || []);
       recipe["node_modifiers"] = modifiers.concat((raw_recipe["node_modifiers"] || []));
       recipe["leaf_modifiers"] = modifiers.concat((raw_recipe["leaf_modifiers"] || []));
-      recipe["config"] = Object.assign({},
+      recipe["config"] = Object.assign(
+        {},
         Recipes[recipe["layout"]]["config"],
         raw_recipe["config"]
-      )
+      );
       // container
       var svgElem = SvgHelper.create("svg");
       var root = generateTree(svgElem, tree_descr, recipe);
