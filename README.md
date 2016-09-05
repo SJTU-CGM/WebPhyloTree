@@ -106,4 +106,4 @@ __Note:__ if you works on a HTML, `svgElement` should be replaced by a SVG conta
 
 ## See also
 As WebTree takes JSON as input, you may need [a parser for Newick](
-https://github.com/KelvinLu1024/newick.js).
+https://github.com/KelvinLu1024/newick.js) || [a parser for PhyloXML](https://github.com/KelvinLu1024/phyloxml.js)
