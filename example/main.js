@@ -41,12 +41,9 @@ switch (document.documentElement.tagName) {
 // /* Expert */
  var tree = WebTree.load(description, {
      layout: "unrooted",
-     node_modifiers: [WebTree.Appendage.button],
-     leaf_modifiers: [WebTree.Appendage.label],
-     config: {
-       "branch_unit": 5,
-       "leaf_size": 32,
-     },
+     extensions: [ WebTree.Extensions.LeafButton, WebTree.Extensions.LeafLabel ],
+     branch_unit: 5,
+     leaf_size: 32
  });
 
 

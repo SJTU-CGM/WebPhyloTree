@@ -172,19 +172,21 @@ var WebTree = (function(){
       n1.subnodes.push(n2);
     }
     // @constructor
-    function Node(name, length, data) {
+    function Node(name, length, data, share) {
       this.name = name;
       this.length = length;
       this.parent = null;
       this.data = data;
+      this.share = share;
       this.subnodes = [];
       return this;
     }
-    function Leaf(name, length, data) {
+    function Leaf(name, length, data, share) {
       this.name = name;
       this.length = length;
       this.parent = null;
       this.data = data;
+      this.share = share;
       return this;
     }
     
@@ -264,21 +266,19 @@ var WebTree = (function(){
         }
         function setUnitDegree(root) {
           var unit = 360 / root.layout["count"];
-          dfs(root, function(node) {
-              node.layout["unit"] = unit;
-          });
+          root.share["unit"] = unit;
         }
         function calcRotate(node) {
           if (isNode(node)) {
             var sum = 0;
             for (var snode of node.subnodes) {
-              snode.layout["rotate"] = sum * node.layout["unit"];
+              snode.layout["rotate"] = sum * node.share["unit"];
               sum += snode.layout["count"];
             }
           }
         }
         function calcSpan(node) {
-          node.layout["span"] = node.layout["count"] * node.layout["unit"];
+          node.layout["span"] = node.layout["count"] * node.share["unit"];
         }
         function insertToParent(node) {
           if (node.parent) {
@@ -438,7 +438,7 @@ var WebTree = (function(){
               if (isLeaf(node) || node.subnodes.length == 0) {
                 node.layout["vbranch_from"] = 0;
                 node.layout["vbranch_to"] = 0;
-                node.layout["joint"] = node.layout["unit"] / 2;
+                node.layout["joint"] = node.share["unit"] / 2;
               } else {
                 var first = node.subnodes[0];
                 var last = node.subnodes[node.subnodes.length-1];
@@ -620,15 +620,16 @@ var WebTree = (function(){
         var data = descr["data"] || {};
         var length = descr["length"] || data["branch_length"] || 0;
         if (descr["subnodes"] == undefined || descr["subnodes"].length == 0) {
-          return new Leaf(name, length, data);
+          return new Leaf(name, length, data, share);
         } else {
-          var node = new Node(name, length, data);
+          var node = new Node(name, length, data, share);
           for (var sub of descr["subnodes"]) {
             appendNode(node, createTree(sub));
           }
           return node;
         }
       }
+      var share = {};
       var root = createTree(descr);
       dfs(root, function(node) {
           Elements.standard(node);

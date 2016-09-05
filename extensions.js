@@ -116,13 +116,16 @@
   
   
   E.LeafLabel = {
-    "leaf_modifier": function (node) {
-      var label = WT.SvgHelper.text(node.name);
+    "leaf_modifier": function (leaf) {
+      var label = WT.SvgHelper.text(leaf.name);
       label.style.dominantBaseline = "middle";
       label.style.fontFamily = "Monospace";
       label.style.fontSize = 15;
-      node.elements["hook"].appendChild(label);
-      node.elements["label"] = label;
+      leaf.elements["hook"].appendChild(label);
+      leaf.elements["label"] = label;
+      leaf.share["max_label_length"] = Math.max(
+        leaf.share["max_label_length"] || 0,
+        leaf.name.length );
       return;
     },
     "node_modifier": null,
@@ -140,19 +143,34 @@
       }
       return;
     }
-  }
+  };
   
   
   E.LeafButton = {
-    "leaf_modifier": function(node) {
-      var labelBtn = WT.SvgHelper.rect(0, -16, 50, 28);
-      node.elements["hook"].appendChild(labelBtn);
-      node.elements["label_button"] = labelBtn;
+    "leaf_modifier": function(leaf) {
+      leaf.share["max_label_length"] = Math.max(
+        leaf.share["max_label_length"] || 0,
+        leaf.name.length );
+      var btn = WT.SvgHelper.rect(0, -15, 50, 30, 5, 5);
+      btn.style.fill = "white";
+      leaf.elements["hook"].appendChild(btn);
+      leaf.elements["label_button"] = btn;
       return;
     },
     "node_modifier": null,
-    "tree_modifier": null
-  }
+    "tree_modifier": function (root) {
+      if (root.share["max_label_length"] != undefined) {
+        var wid = (root.share["max_label_length"] || 5) * 10 + 10;
+        WT.dfs(root, function (leaf) {
+          if (WT.isLeaf(leaf)) {
+            leaf.elements["label_button"].width.baseVal.value = wid;
+          }
+          return;
+        });
+      }
+      return;
+    }
+  };
   
   
   E.NodeButton = {
