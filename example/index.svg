@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-     width="800" height="800">
+     width="800px" height="800px">
   <script xlink:href="../webtree.js" type="text/javascript" />
   <!--optional-->
   <script xlink:href="../extensions.js" type="text/javascript" />

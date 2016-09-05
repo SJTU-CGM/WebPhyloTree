@@ -15,36 +15,36 @@ var description = {
 
 var container;
 switch (document.documentElement.tagName) {
-  case "HTML":
-    container = document.getElementsByTagName("body")[0];
-    break;
-  case "svg":
-    container = document.documentElement;
-    break;
-  default:
-    throw "Unknown document type: " + document.documentElement.tagName;
+case "HTML":
+  container = document.getElementsByTagName("body")[0];
+  break;
+case "svg":
+  container = document.documentElement;
+  break;
+default:
+  throw "Unknown document type: " + document.documentElement.tagName;
 }
 
 /* Beginner */
-// var tree = WebTree.rectangular(description);
+var tree = WebTree.rectangular(description);
 // var tree = WebTree.circular(description);
 // var tree = WebTree.unrooted(description);
 
 
 /* Advanced */
 // var tree = WebTree.rectangular(description, {
-//     "branch_unit": 5,
-//     "leaf_size": 40,
+    // "branch_unit": 5,
+    // "leaf_size": 40,
 // });
 
 
 // /* Expert */
- var tree = WebTree.load(description, {
-     layout: "unrooted",
-     extensions: [ WebTree.Extensions.LeafButton, WebTree.Extensions.LeafLabel ],
-     branch_unit: 5,
-     leaf_size: 32
- });
+// var tree = WebTree.load(description, {
+    // layout: "rectangular",
+    // extensions: [ WebTree.Extensions.LeafButton, WebTree.Extensions.LeafLabel ],
+    // branch_unit: 5,
+    // leaf_size: 32
+// });
 
 
 var root = tree["root"];
