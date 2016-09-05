@@ -9,12 +9,7 @@ This is a brief introduction. For comprehensive information on configuration and
 * Unrooted
 
 ## Install
-WebTree is divided into 3 sublibraries: `webtree.js`, `appendage.js` and `extension.js`  
-* `webtree.js` **core**. 
-* `appendage.js` **optional**  
-a collection of functions that add extra elements onto the tree (e.g. labels and buttons). 
-* `extension.js` **optional**  
-a collection of functions that do extra works (e.g. extending leaf branches). 
+WebTree is divided into 2 source files, or libraries: `webtree.js`(core), `extensions.js`(optional).
 
 ## Usage
 (Codes showed below are included in `example/`)  
@@ -25,11 +20,17 @@ It's assumed that the document is either an HTML or XML, see examples below.
 <html>
   <head>
     <script src="../webtree.js" type="text/javascript"></script>
-    <!--<script src="../extension.js" type="text/javascript"></script>-->
-    <!--<script src="../appendage.js" type="text/javascript"></script>-->
+    <!--optional-->
+    <script src="../extensions.js" type="text/javascript"></script>
+    <!--example main.js-->
+    <style>
+      html, body, svg {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
   </head>
   <body>
-    <svg style="stroke:black; fill:grey;" width="1200" height="1200" />
     <script src="main.js" type="text/javascript"></script>
   </body>
 </html>
@@ -38,11 +39,11 @@ It's assumed that the document is either an HTML or XML, see examples below.
 <?xml version="1.0" encoding="UTF-8"?>
 
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-     stroke="black" fill="grey"
-     width="1200" height="1200">
+     width="800px" height="800px">
   <script xlink:href="../webtree.js" type="text/javascript" />
-  <!--<script xlink:href="../extension.js" type="text/javascript" />-->
-  <!--<script xlink:href="../appendage.js" type="text/javascript" />-->
+  <!--optional-->
+  <script xlink:href="../extensions.js" type="text/javascript" />
+  <!--example main.js-->
   <script xlink:href="main.js" type="text/javascript" />
 </svg>
 ```
@@ -87,16 +88,14 @@ container.appendChild(elem);
 ```
 
 ### Expert
-(`appendages.js` is required)
+(`extensions.js` is required)
 ```javascript
 // add buttons for internal nodes and labels for leaves
-var tree = WebTree.load(svgElement, description, {
+var tree = WebTree.load(description, {
   layout: "rectangular",
-  node_modifiers: [WebTree.Appendage.button],
-  leaf_modifiers: [WebTree.Appendage.label],
-  config: {
-    "branch_unit": 10
-  },
+  extensions: [ WebTree.Extensions.LeafButton, WebTree.Extensions.LeafLabel ],
+  branch_unit: 5,
+  leaf_size: 32
 });
 
 var root = tree["root"];
