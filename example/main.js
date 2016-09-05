@@ -26,7 +26,7 @@ switch (document.documentElement.tagName) {
 }
 
 /* Beginner */
-var tree = WebTree.rectangular(description);
+// var tree = WebTree.rectangular(description);
 // var tree = WebTree.circular(description);
 // var tree = WebTree.unrooted(description);
 
@@ -39,15 +39,15 @@ var tree = WebTree.rectangular(description);
 
 
 // /* Expert */
-// var tree = WebTree.load(description, {
-//     layout: "unrooted",
-//     node_modifiers: [WebTree.Appendage.button],
-//     leaf_modifiers: [WebTree.Appendage.label],
-//     config: {
-//       "branch_unit": 5,
-//       "leaf_size": 32,
-//     },
-// });
+ var tree = WebTree.load(description, {
+     layout: "unrooted",
+     node_modifiers: [WebTree.Appendage.button],
+     leaf_modifiers: [WebTree.Appendage.label],
+     config: {
+       "branch_unit": 5,
+       "leaf_size": 32,
+     },
+ });
 
 
 var root = tree["root"];
