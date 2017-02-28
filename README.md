@@ -66,7 +66,7 @@ var tree = WebTree.load("rectangular", description, {
         "branch_length_unit": 10,
         "leaf_span": 50,
     },
-    [ WebTree.Addons.LeafLabel, WebTree.Addons.ExtendBranch, WebTree.Addons.ElementClass ]
+    [ WebTree.Addons.LeafLabel, WebTree.Addons.ExtendBranch ]
 );
 ```
 
