@@ -22,7 +22,7 @@ This section illustrates visualizing tree in HTML document. The source code are 
 
 ### Tree Description
 
-The tree to be visualized should be described in the form of a JavaScript object, for example:
+The tree to be visualized should be described in the form of a JavaScript object (see [Specification of Tree Description](https://github.com/KelvinLu1024/WebTree/wiki/Specification-of-Tree-Description)), for example:
 
 ```javascript
 var description = {
