@@ -369,17 +369,17 @@ var WebTree = (function(){
                 function calculateSpanAndTop(root) {
                     function C(node) {
                         if (isLeaf(node)) {
-                            node.layout["span"] = node.share.config["leaf_span"];
+                            node.layout["height"] = node.share.config["leaf_height"];
                         } else if (node.subnodes.length == 0) {
-                            node.layout["span"] = node.share.config["empty_node_span"];
+                            node.layout["height"] = node.share.config["empty_node_height"];
                         } else {
-                            var span = 0;
+                            var height = 0;
                             for (var snode of node.subnodes) {
-                                snode.layout["top"] = span;
+                                snode.layout["top"] = height;
                                 C(snode);
-                                span += snode.layout["span"];
+                                height += snode.layout["height"];
                             }
-                            node.layout["span"] = span;
+                            node.layout["height"] = height;
                         }
                     }
                     C(root);
@@ -391,15 +391,15 @@ var WebTree = (function(){
                         if (isLeaf(node) || node.subnodes.length == 0) {
                             node.layout["vbranch_top"] = 0;
                             node.layout["vbranch_bot"] = 0;
-                            node.layout["joint"] = node.layout["span"] / 2;
+                            node.layout["joint"] = node.layout["height"] / 2;
                         } else {
                             node.subnodes.map(C);
                             var first = node.subnodes[0];
                             var last = node.subnodes[node.subnodes.length-1];
                             var dist_top = first.layout["joint"];
-                            var dist_bot = last.layout["span"] - last.layout["joint"];
+                            var dist_bot = last.layout["height"] - last.layout["joint"];
                             var vbranch_top = dist_top;
-                            var vbranch_bot = node.layout["span"] - dist_bot;
+                            var vbranch_bot = node.layout["height"] - dist_bot;
                             node.layout["vbranch_top"] = vbranch_top;
                             node.layout["vbranch_bot"] = vbranch_bot;
                             node.layout["joint"] = (vbranch_top + vbranch_bot) / 2;
@@ -481,9 +481,10 @@ var WebTree = (function(){
                 function calculateJointAndVBranchLayout(root, unitDegree) {
                     function C(node) {
                         if (isLeaf(node) || node.subnodes.length == 0) {
-                            node.layout["vbranch_from"] = 0;
-                            node.layout["vbranch_to"] = 0;
-                            node.layout["joint"] = node.layout["weight"] * unitDegree / 2;
+                            var joint = node.layout["weight"] * unitDegree / 2
+                            node.layout["vbranch_from"] = joint;
+                            node.layout["vbranch_to"] = joint;
+                            node.layout["joint"] = joint;
                         } else {
                             node.subnodes.map(C);
                             var first = node.subnodes[0];
@@ -708,22 +709,19 @@ var WebTree = (function(){
     var Recipes = {
         "rectangular": {
             "branch_length_unit": 4,
-            "leaf_span": 32,
-            "empty_node_span": 32,
-            "leaf_label_size": 32,
-            "class_prefix": "webtree-"
+            "leaf_height": 32,
+            "empty_node_height": 32,
+            "leaf_label:width": 32
         },
         "circular": {
             "branch_length_unit": 3,
             "empty_node_weight": 1,
-            "leaf_label_size": 32,
-            "class_prefix": "webtree-"
+            "leaf_label:width": 32
         },
         "unrooted": {
             "branch_length_unit": 5,
             "empty_node_weight": 1,
-            "leaf_label_size": 32,
-            "class_prefix": "webtree-"
+            "leaf_label:width": 32
         }
     };
     
@@ -733,17 +731,6 @@ var WebTree = (function(){
     // @addons
     
     var Addons = {
-        ElementClass: {
-            process: function (root) {
-                var prefix = root.share.config["class_prefix"];
-                dfs(root, function(node) {
-                    for (var elename in node.elements) {
-                        var elem = node.elements[elename];
-                        SvgHelper.setAttribute(elem, "class", prefix + elename);
-                    }
-                });
-            }
-        },
         LeafLabel: {
             process: function (root) {
                 
@@ -774,7 +761,7 @@ var WebTree = (function(){
                                 R(snode, absRotation);
                             }
                         } else {
-                            var degree = absRotation + (node.layout["span"] / 2);
+                            var degree = absRotation + (node.layout["height"] / 2);
                             if (degree > 90 && degree < 270) {
                                 var elem = node.elements["leaf_label"];
                                 SvgHelper.setAttribute(elem, "text-anchor", "end");
@@ -799,7 +786,7 @@ var WebTree = (function(){
                         node.elements["hook"].appendChild(elem);
                         node.elements["leaf_label"] = elem;
                         // so that the tree is position properly
-                        node.layout["size"] += node.share.config["leaf_label_size"];
+                        node.layout["size"] += node.share.config["leaf_label:width"];
                     }
                 }
                 

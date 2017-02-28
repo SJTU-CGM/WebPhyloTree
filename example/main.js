@@ -16,7 +16,7 @@ var description = {
 
 
 /* Beginner */
-var tree = WebTree.load("rectangular", description);
+// var tree = WebTree.load("rectangular", description);
 
 
 /* Configuration */
@@ -28,12 +28,12 @@ var tree = WebTree.load("rectangular", description);
 
 
 /* Using addons */
-// var tree = WebTree.load("rectangular", description, {
-//         "branch_length_unit": 10,
-//         "leaf_span": 50,
-//     },
-//     [ WebTree.Addons.LeafLabel, WebTree.Addons.ExtendBranch, WebTree.Addons.ElementClass ]
-// );
+var tree = WebTree.load("rectangular", description, {
+        "branch_length_unit": 10,
+        "leaf_span": 50,
+    },
+    [ WebTree.Addons.LeafLabel, WebTree.Addons.ExtendBranch ]
+);
 
 
 document.getElementsByTagName("body")[0].appendChild(tree.element);
