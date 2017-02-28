@@ -49,7 +49,7 @@ The most simple way looks like this. `"rectangular"` can be replaced with `"circ
 var tree = WebTree.load("rectangular", description);
 ```
 
-Users can also supply configuration of layout parameters. (see [list of layout parameters and their meanings](https://github.com/KelvinLu1024/WebTree/wiki/List-of-Layout-Parameters)). 
+Users can customize the layout of tree by defining some layout parameters. (see [list of layout parameters and their meanings](https://github.com/KelvinLu1024/WebTree/wiki/List-of-Layout-Parameters)). 
 
 ```javascript
 var tree = WebTree.load("rectangular", description, {
@@ -59,7 +59,7 @@ var tree = WebTree.load("rectangular", description, {
 );
 ```
 
-WebTree is shipped with several addons, users can also supply addons while constructing a tree. (see [list of addons and their meanings](https://github.com/KelvinLu1024/WebTree/wiki/List-of-Addons)). 
+WebTree is shipped with several addons, users can enable them during tree construction. (see [list of addons and their meanings](https://github.com/KelvinLu1024/WebTree/wiki/List-of-Addons)). 
 
 ```javascript
 var tree = WebTree.load("rectangular", description, {
@@ -73,15 +73,15 @@ var tree = WebTree.load("rectangular", description, {
 
 ### The Tree Object
 
-The value of `tree` now is an object having 2 properties: `element` and `root`. 
+The value of `tree` is now an object with 2 properties: `element` and `root`. 
 
-`tree.element` is a `<svg>` element. Users can directly insert it to `<body>`. 
+`tree.element` is a `<svg>` element. Users can insert it to document to display the tree
 
 ```javascript
 document.getElementsByTagName("body")[0].appendChild(tree.element);
 ```
 
-`tree.root` is for addon developers and power users. It is safe to ignore it.
+`tree.root` is provided for addon developers and power users. It is safe to ignore it.
 
 
 
@@ -94,4 +94,4 @@ Sometimes, it is desirable to construct many trees in the same layout. So WebTre
 
 ## See also
 
-As WebTree takes JSON as input, you may need [a parser for Newick](https://github.com/KelvinLu1024/newick.js) or [a parser for PhyloXML](https://github.com/KelvinLu1024/phyloxml.js)
+As WebTree takes JSON as input, you may need [a parser for Newick](https://github.com/KelvinLu1024/newick.js) or [a parser for PhyloXML](https://github.com/KelvinLu1024/phyloxml.js).
