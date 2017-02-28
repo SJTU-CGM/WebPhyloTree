@@ -1,50 +1,39 @@
 "use strict";
 
+var container = document.getElementsByTagName("body")[0];
 var description = {
-  name: "E", length: 10,
+  name: "N1", length: 10,
   subnodes: [
-    { name: "D", length: 30,
+    { name: "N2", length: 30,
       subnodes: [
-        { name: "C", length: 20 },
+        { name: "A", length: 10 },
         { name: "B", length: 20 }
       ]
     },
-    { name: "A", length: 20 }
+    { name: "C", length: 20 }
   ]
 };
 
-var container;
-switch (document.documentElement.tagName) {
-case "HTML":
-  container = document.getElementsByTagName("body")[0];
-  break;
-case "svg":
-  container = document.documentElement;
-  break;
-default:
-  throw "Unknown document type: " + document.documentElement.tagName;
-}
 
 /* Beginner */
-var tree = WebTree.rectangular(description);
-// var tree = WebTree.circular(description);
-// var tree = WebTree.unrooted(description);
+var tree = WebTree.load("rectangular", description);
 
 
-/* Advanced */
-// var tree = WebTree.rectangular(description, {
-    // "branch_unit": 5,
-    // "leaf_size": 40,
-// });
+/* Configuration */
+// var tree = WebTree.load("rectangular", description, {
+//         "branch_length_unit": 10,
+//         "leaf_span": 50,
+//     }
+// );
 
 
-// /* Expert */
-// var tree = WebTree.load(description, {
-    // layout: "rectangular",
-    // extensions: [ WebTree.Extensions.LeafButton, WebTree.Extensions.LeafLabel ],
-    // branch_unit: 5,
-    // leaf_size: 32
-// });
+/* Using addons */
+// var tree = WebTree.load("rectangular", description, {
+//         "branch_length_unit": 10,
+//         "leaf_span": 50,
+//     },
+//     [ WebTree.Addons.LeafLabel, WebTree.Addons.ExtendBranch, WebTree.Addons.ElementClass ]
+// );
 
 
 var root = tree["root"];
