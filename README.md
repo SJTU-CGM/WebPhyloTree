@@ -1,6 +1,6 @@
 # WebTree
 
-WebTree is a JavaScript library which facilitates visualizing tree in HTML and SVG document.
+WebTree is a JavaScript library which helps visualizing tree in HTML and SVG document. The primary function of WebTree is to  translate a description of tree into a DOM tree of SVG elements (or, the display of the tree). Users can customize the display by setting layout parameters or enabling addons. The tree can be either static or interactive, depending on enabled addons.
 
 
 
@@ -22,7 +22,7 @@ This section illustrates visualizing tree in HTML document. The source code are 
 
 ### Tree Description
 
-The tree to be visualized should be described in the form of a JavaScript object (see [Specification of Tree Description](https://github.com/KelvinLu1024/WebTree/wiki/Specification-of-Tree-Description)), for example:
+The tree to be visualized should be described as a JavaScript object (see [Specification of Tree Description](https://github.com/KelvinLu1024/WebTree/wiki/Specification-of-Tree-Description)), for example:
 
 ```javascript
 var description = {
@@ -43,7 +43,7 @@ var description = {
 
 ### Tree Construction
 
-The most simple way looks like this. `"rectangular"` can be replaced with `"circular"` or `"unrooted"` to use the other types of layout. 
+The most simple way to construct a tree looks like this. `"rectangular"` can be replaced with `"circular"` or `"unrooted"` to use the other types of layout. 
 
 ```javascript
 var tree = WebTree.load("rectangular", description);
