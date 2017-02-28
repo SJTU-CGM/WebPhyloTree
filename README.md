@@ -49,7 +49,7 @@ The most simple way looks like this. `"rectangular"` can be replaced with `"circ
 var tree = WebTree.load("rectangular", description);
 ```
 
-Users can also supply configuration of layout parameters. Wiki page contains a list of layout parameters and their description. 
+Users can also supply configuration of layout parameters. Wiki page contains a [list of layout parameters and their meanings](https://github.com/KelvinLu1024/WebTree/wiki/List-of-Layout-Parameters). 
 
 ```javascript
 var tree = WebTree.load("rectangular", description, {
@@ -59,7 +59,7 @@ var tree = WebTree.load("rectangular", description, {
 );
 ```
 
-WebTree is shipped with several addons, users can also supply addons while constructing a tree. Wiki page contains a list of addons and their description. 
+WebTree is shipped with several addons, users can also supply addons while constructing a tree. Wiki page contains a [list of addons and their meanings](https://github.com/KelvinLu1024/WebTree/wiki/List-of-Addons). 
 
 ```javascript
 var tree = WebTree.load("rectangular", description, {
