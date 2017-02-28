@@ -73,7 +73,7 @@ var tree = WebTree.load("rectangular", description, {
 
 ### The Tree Object
 
-Variable `tree` now is an object having 2 properties: `element` and `root`. 
+The value of `tree` now is an object having 2 properties: `element` and `root`. 
 
 `tree.element` is a `<svg>` element. Users can directly insert it to `<body>`. 
 
