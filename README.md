@@ -71,6 +71,19 @@ var tree = WebTree.load("rectangular", description, {
 ```
 
 
+### The Tree Object
+
+Variable `tree` now is an object having 2 properties: `element` and `root`. 
+
+`tree.element` is a `<svg>` element. Users can directly insert it to `<body>`. 
+
+```javascript
+document.getElementsByTagName("body")[0].appendChild(tree.element);
+```
+
+`tree.root` is for addon developers and power users. It is safe to ignore it.
+
+
 
 ### Shortcuts
 

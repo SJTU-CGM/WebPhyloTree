@@ -1,6 +1,6 @@
 "use strict";
 
-var container = document.getElementsByTagName("body")[0];
+
 var description = {
   name: "N1", length: 10,
   subnodes: [
@@ -36,6 +36,4 @@ var tree = WebTree.load("rectangular", description);
 // );
 
 
-var root = tree["root"];
-var elem = tree["element"];
-container.appendChild(elem);
+document.getElementsByTagName("body")[0].appendChild(tree.element);
