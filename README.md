@@ -49,7 +49,7 @@ The most simple way looks like this. `"rectangular"` can be replaced with `"circ
 var tree = WebTree.load("rectangular", description);
 ```
 
-Users can also supply configuration of layout parameters. Wiki page contains a list of slayout parameters and their description. 
+Users can also supply configuration of layout parameters. Wiki page contains a list of layout parameters and their description. 
 
 ```javascript
 var tree = WebTree.load("rectangular", description, {
