@@ -49,7 +49,7 @@ The most simple way looks like this. `"rectangular"` can be replaced with `"circ
 var tree = WebTree.load("rectangular", description);
 ```
 
-Users can also supply configuration of layout parameters. Wiki page contains a [list of layout parameters and their meanings](https://github.com/KelvinLu1024/WebTree/wiki/List-of-Layout-Parameters). 
+Users can also supply configuration of layout parameters. (see [list of layout parameters and their meanings](https://github.com/KelvinLu1024/WebTree/wiki/List-of-Layout-Parameters)). 
 
 ```javascript
 var tree = WebTree.load("rectangular", description, {
@@ -59,7 +59,7 @@ var tree = WebTree.load("rectangular", description, {
 );
 ```
 
-WebTree is shipped with several addons, users can also supply addons while constructing a tree. Wiki page contains a [list of addons and their meanings](https://github.com/KelvinLu1024/WebTree/wiki/List-of-Addons). 
+WebTree is shipped with several addons, users can also supply addons while constructing a tree. (see [list of addons and their meanings](https://github.com/KelvinLu1024/WebTree/wiki/List-of-Addons)). 
 
 ```javascript
 var tree = WebTree.load("rectangular", description, {
@@ -87,7 +87,7 @@ document.getElementsByTagName("body")[0].appendChild(tree.element);
 
 ### Shortcuts
 
-Sometimes, it is desirable to construct many trees in the same layout. So WebTree provides three more tree constructor: `WebTree.rectangular`, `WebTree.circular` and `WebTree.unrooted`. Their usages are almost the same as `WebTree.load`, except that they ommits the first parameter. In a nut shell, `WebTree.rectangular(...)` is exactly the same as `WebTree.load("rectangular", ...)`. 
+Sometimes, it is desirable to construct many trees in the same layout. So WebTree provides three more tree constructor: `WebTree.rectangular`, `WebTree.circular` and `WebTree.unrooted`. Their usages are almost the same as `WebTree.load`, except that they ommits the first parameter. In a nut shell, `WebTree.rectangular(...)` is equivalent to `WebTree.load("rectangular", ...)`. 
 
 
 
