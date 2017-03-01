@@ -1,0 +1,8 @@
+title: Webtree
+description: A Web-based tree viewer. All 3 layouts, out of box.
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-minimal
+
+gems:
+  - jekyll-mentions

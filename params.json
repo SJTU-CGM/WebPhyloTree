@@ -1,6 +1,0 @@
-{
-  "name": "Webtree",
-  "tagline": "A Web-based tree viewer. All 3 layouts, out of box.",
-  "body": "# WebTree\r\nA Web-based embedable dynamic tree viewer. Process JSON into SVG. HTML and SVG. Work out of box.\r\n\r\n## Supported Layout\r\n* Rectangular\r\n* Circular\r\n* Unrooted\r\n\r\n## Usage\r\n### Beginning\r\n    var svgElem = document.getElementById(\"tree-container\")\r\n    var root = WebTree.rectangular(description)\r\n    svgElem.appendChild(root.elem)\r\n\r\n### Advanced\r\n    var root = WebTree.rectangular(description, {\r\n      \"branch_unit\": 10,\r\n      \"leaf_size\": 32,\r\n    })\r\n\r\n### Expert\r\n    var root = WebTree.rectangular(description, {\r\n      layout: \"rectangular\",\r\n      node_pipline: [WebTree.Appendage.button],\r\n      leaf_pipline: [WebTree.Appendage.label, WebTree.Extension.rotateLabel],\r\n      config: {\r\n        \"branch_unit\": 10,\r\n        \"leaf_size\": 32,\r\n      },\r\n    });\r\n\r\n## See also\r\nAs WebTree takes JSON as input, you may need a parser for Newick or phyloXML.  \r\n    parseNewick(String txt)  \r\nhttps://github.com/KelvinLu1024/newick.js\r\n> ",
-  "note": "Don't delete this file! It's used internally to help with page regeneration."
-}
