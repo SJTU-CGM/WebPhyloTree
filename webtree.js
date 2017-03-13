@@ -918,7 +918,7 @@ var WebTree = (function(){
                 var getLabelByName = config["leaf_button:get_label_by_name"] || function(x) { return x; };
                 var showBorder = config["leaf_button:show_border"];
                 var buttonHeight = fontSize + 2 * config["leaf_button:vertical_padding"];
-                var buttonWidth = config["leaf_button:width"];
+                var buttonWidth = config["leaf_button:width"] - 2;      // leave space for border
                 var onclickHandler = config["leaf_button:onclick"];    // could be null!
                 
                 P(root);
