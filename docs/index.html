@@ -6,7 +6,7 @@
     <script src="./js/zepto.js" type="text/javascript"></script>
     <script src="./js/webtree.js" type="text/javascript"></script>
     <script src="./js/newick.js" type="text/javascript"></script>
-    <script src="./js/formInspector.js" type="text/javascript"></script>
+    <script src="./js/form-inspector.js" type="text/javascript"></script>
     <link rel="stylesheet" type="text/css" href="css/main.css" />
     <title>Homepage of WebTree</title>
 </head>
@@ -25,17 +25,22 @@
         <label for="layout-type">
             Layout Type
             <select name="layout-type" id="layout-type">
-            <option value="rectangular">
-                Rectangular
-            </option>
-            <option value="circular">
-                Circular
-            </option>
-            <option value="unrooted">
-                Unrooted
-            </option>
-        </select>
-     </label>
+                <option value="rectangular">
+                    Rectangular
+                </option>
+                <option value="circular">
+                    Circular
+                </option>
+                <option value="unrooted">
+                    Unrooted
+                </option>
+            </select>
+        </label>
+        <br />
+        <label>
+            Unit Length of Branch
+            <input name="branch-unit" id="branch-unit" type="number" min="0" step="1" value="150" />
+        </label>
         <br />
         <label for="enable-label">
             Enable Leaf Button
@@ -43,19 +48,29 @@
         </label>
         <fieldset>
             <legend>Leaf Button</legend>
-            <label for="leaf_button$show_border">
+            <label for="leaf_button::show_border">
                 Show Border
-                <input name="leaf_button$show_border" id="leaf_button$show_border" type="checkbox"/>
+                <input name="leaf_button::show_border" id="leaf_button::show_border" type="checkbox"/>
             </label>
             <br />
-            <label for="leaf_button$width">
+            <label for="leaf_button::auto_flip">
+                Auto Flip
+                <input name="leaf_button::auto_flip" id="leaf_button::auto_flip" type="checkbox"/>
+            </label>
+            <br />
+            <label for="leaf_button::width">
                 Width
-                <input name="leaf_button$width" id="leaf_button$width" type="number" min="0" step="1" value="250" />
+                <input name="leaf_button::width" id="leaf_button::width" type="number" min="0" step="1" value="250" />
             </label>
             <br />
-            <label for="leaf_button$font_size">
+            <label for="leaf_button::font_size">
                 Font Size
-                <input name="leaf_button$font_size" id="leaf_button$font_size" type="number" min="0" step="1" value="10" />
+                <input name="leaf_button::font_size" id="leaf_button::font_size" type="number" min="0" step="1" value="10" />
+            </label>
+            <br />
+            <label for="leaf_button::vertical_padding">
+                Vertical Padding
+                <input name="leaf_button::vertical_padding" id="leaf_button::vertical_padding" type="number" min="0" step="1" value="5" />
             </label>
         </fieldset>
         <label for="enable-node-button">
@@ -64,21 +79,21 @@
         </label>
         <fieldset>
             <legend>Node Button</legend>
+            <label for="node_button::radius">
+                Radius
+                <input name="node_button::radius" id="node_button::radius" type="number" min="0" step="1" value="5" />
+            </label>
+            <br />
             <label>
                 Fill Color
-                <input type="color" name="node_button$fill" id="node_button$fill" value="#add8e6" />
+                <input type="color" name="node_button::fill" id="node_button::fill" value="#add8e6" />
             </label>
             <br />
             <label>
                 Border Color
-                <input type="color" name="node_button$stroke" id="node_button$stroke" value="#0000ff" />
+                <input type="color" name="node_button::stroke" id="node_button::stroke" value="#0000ff" />
             </label>
         </fieldset>
-        <label>
-            Unit Length of Branch
-            <input name="branch-unit" id="branch-unit" type="number" min="0" step="1" value="150" />
-        </label>
-        <br />
         <label>
             Enable Extend Branch
             <input name="enable-extend-branch" id="enable-extend-branch" type="checkbox" checked="true" />
@@ -86,6 +101,10 @@
         <br />
         <input type="submit" value="Update Tree Display" id="update-display">
     </form>
+    <aside>
+        <h3>Corresponding Layout Parameters</h3>
+        <textarea id="layout-parameter-display" rows="12" cols="20"></textarea>
+    </aside>
     <div id="tree-container"></div>
     <script src="./js/main.js" type="text/javascript"></script>
 </body>

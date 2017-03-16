@@ -1,3 +1,16 @@
 html, body {
   background-color: white;
 }
+
+form {
+  float: left;
+  margin-right: 2em;
+}
+
+aside {
+  
+}
+
+#tree-container {
+  clear: both;
+}

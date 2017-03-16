@@ -785,6 +785,33 @@ var WebTree = (function(){
         };
     })();
     
+
+
+
+    function makeAddonSpecifiConfig(addonName, config) {
+        var newConfig = {};
+        for (var key in config) {
+            var value = config[key];
+            var newKey = addonName + "::" + key;
+            newConfig[newKey] = value;
+        }
+        return newConfig;
+    }
+
+
+
+
+    function extractAddonSpecifiConfig(config, addonName) {
+        var prefix = addonName + "::";
+        var newConfig = {};
+        for (var key in config) {
+            if (key.startsWith(prefix)) {
+                var newKey = key.substr(prefix.length);
+                newConfig[newKey] = config[key];
+            }
+        }
+        return newConfig;
+    }
     
     
     
@@ -809,21 +836,24 @@ var WebTree = (function(){
             "branch_length_unit": 5,
             "empty_node_weight": 1,
         };
-        var addons = {
-            // leaf button
-            "leaf_button:shift": 4,
-            "leaf_button:width": 100,
-            "leaf_button:font_size": 20,
-            "leaf_button:vertical_padding": 5,
-            "leaf_button:show_border": true,
-            "leaf_button:get_label_by_name": null,
-            "leaf_button:onclick": null,
-            // node button
-            "node_button:fill": "lightblue",
-            "node_button:stroke": "blue",
-            "node_button:radius": 4,
-            "node_button:onclick": null
-        };
+        var addons = Object.assign({},
+            makeAddonSpecifiConfig("leaf_button", {
+                "shift": 4,
+                "width": 100,
+                "font_size": 20,
+                "vertical_padding": 5,
+                "show_border": true,
+                "auto_flip": false,
+                "get_label_by_name": null,
+                "onclick": null
+            }),
+            makeAddonSpecifiConfig("node_button", {
+                "fill": "lightblue",
+                "stroke": "blue",
+                "radius": 4,
+                "onclick": null
+            })
+        );
         
         return {
             "rectangular": makeConfig(rectangular),
@@ -831,8 +861,7 @@ var WebTree = (function(){
             "unrooted": makeConfig(unrooted)
         };
     })();
-    
-    
+
     
     
     // @addons
@@ -912,19 +941,20 @@ var WebTree = (function(){
                 }
                 
                 var config = root.share.config;
-                var shift = config["leaf_button:shift"];
-                var width = config["leaf_button:width"];
-                var fontSize = config["leaf_button:font_size"];
-                var getLabelByName = config["leaf_button:get_label_by_name"] || function(x) { return x; };
-                var showBorder = config["leaf_button:show_border"];
-                var buttonHeight = fontSize + 2 * config["leaf_button:vertical_padding"];
-                var buttonWidth = config["leaf_button:width"] - 2;      // leave space for border
-                var onclickHandler = config["leaf_button:onclick"];    // could be null!
+                var addonConfig = extractAddonSpecifiConfig(config, "leaf_button");
+                var shift = addonConfig["shift"];
+                var width = addonConfig["width"];
+                var fontSize = addonConfig["font_size"];
+                var getLabelByName = addonConfig["get_label_by_name"] || function(x) { return x; };
+                var showBorder = addonConfig["show_border"];
+                var buttonHeight = fontSize + 2 * addonConfig["vertical_padding"];
+                var buttonWidth = addonConfig["width"] - 2;      // leave space for border
+                var onclickHandler = addonConfig["onclick"];    // could be null!
                 
                 P(root);
 
-                if ((root.share.layoutEngine === Layout["circular"])
-                    || (root.share.layoutEngine === Layout["unrooted"])) {
+                if (((root.share.layoutEngine == Layout["circular"]) || (root.share.layoutEngine == Layout["unrooted"]))
+                    && addonConfig["auto_flip"]) {
                     autoFlip(root);
                 }
                 root.share.layoutEngine.updateTreePosition(root);
@@ -960,10 +990,11 @@ var WebTree = (function(){
                 }
                 
                 var config = root.share.config;
-                var fill = config["node_button:fill"];
-                var stroke = config["node_button:stroke"];
-                var radius = config["node_button:radius"];
-                var onclickHandler = config["node_button:onclick"];
+                var addonConfig = extractAddonSpecifiConfig(config, "node_button");
+                var fill = addonConfig["fill"];
+                var stroke = addonConfig["stroke"];
+                var radius = addonConfig["radius"];
+                var onclickHandler = addonConfig["onclick"];
                 P(root);
             }
         },
@@ -1070,7 +1101,7 @@ var WebTree = (function(){
                 
                 function makeSvgCanvas(width, height) {
                     var svg = SvgHelper.createSvg();
-                    svg.style.stroke = "black";
+                    SvgHelper.setAttribute(svg, "stroke", "black")
                     width = format("%px", width);
                     height = format("%px", height);
                     SvgHelper.setAttribute(svg, "width", width);

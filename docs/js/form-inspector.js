@@ -6,11 +6,6 @@ var FormInspector = (function(){
 
     function FormInspectorError(who, message) {
         return "FormInspector::" + who + ": " + message;
-        this.value = "FormInspector." + who;
-        this.message = message;
-        this.toString = function () {
-            return this.value + ": " + this.message;
-        }
     }
 
 
