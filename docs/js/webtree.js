@@ -220,6 +220,7 @@ var WebTree = (function(){
         
         function addBranchLineElement(node) {
             var brch = SvgHelper.create("path");
+            SvgHelper.setAttribute(brch, "stroke-linecap", "round");
             brch.style.fill = "none";
             node.elements["main"].appendChild(brch);
             node.elements["branch"] = brch;
@@ -1102,10 +1103,9 @@ var WebTree = (function(){
                 function makeSvgCanvas(width, height) {
                     var svg = SvgHelper.createSvg();
                     SvgHelper.setAttribute(svg, "stroke", "black")
-                    width = format("%px", width);
-                    height = format("%px", height);
-                    SvgHelper.setAttribute(svg, "width", width);
-                    SvgHelper.setAttribute(svg, "height", height);
+                    SvgHelper.setAttribute(svg, "width", format("%px", width));
+                    SvgHelper.setAttribute(svg, "height", format("%px", height))
+                    SvgHelper.setAttribute(svg, "viewBox", format("0 0 % %", width, height));
                     return svg;
                 }
                 
