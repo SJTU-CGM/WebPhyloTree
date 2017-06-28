@@ -919,6 +919,7 @@ var WebTree = (function(){
                         SvgHelper.setAttribute(elem, "width", buttonWidth);
                         SvgHelper.setAttribute(elem, "height", buttonHeight);
                         SvgHelper.setAttribute(elem, "fill", "rgba(0,0,0,0)");
+                        SvgHelper.setAttribute(elem, "style", "cursor: initial;");
                         if (! showBorder) {
                             SvgHelper.setAttribute(elem, "stroke", "rgba(0,0,0,0");
                         }
@@ -973,6 +974,7 @@ var WebTree = (function(){
                         SvgHelper.setAttribute(elem, "cx", 0);
                         SvgHelper.setAttribute(elem, "cy", 0);
                         SvgHelper.setAttribute(elem, "r", radius);
+                        SvgHelper.setAttribute(elem, "style", "cursor: initial;");
                         if (onclickHandler != null) {
                             elem.addEventListener("click", function (... args) { 
                                 onclickHandler(node); 

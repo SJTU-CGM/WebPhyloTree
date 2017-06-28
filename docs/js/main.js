@@ -28,12 +28,13 @@ function main() {
 function displayTree(tolJson, configuration) {
     
     function enableDraging(svgElem) {
-        svgElem.style.cursor = "move";
+        svgElem.style.cursor = "grab";
         var viewBox = svgElem.viewBox;
         var lastPosition = null;
         svgElem.addEventListener("mousedown", function(e) {
-            var x = e.clientX;
-            var y = e.clientY;
+            svgElem.style.cursor = "grabbing";
+            var x = e.layerX;
+            var y = e.layerY;
             lastPosition = {
                 x: x,
                 y: y
@@ -41,8 +42,9 @@ function displayTree(tolJson, configuration) {
         });
         svgElem.addEventListener("mouseup", function(e) {
             if (lastPosition !== null) {
-                var x1 = e.clientX;
-                var y1 = e.clientY;
+                svgElem.style.cursor = "grab";
+                var x1 = e.layerX;
+                var y1 = e.layerY;
                 var x0 = lastPosition.x;
                 var y0 = lastPosition.y;
                 lastPosition = null;
@@ -54,11 +56,16 @@ function displayTree(tolJson, configuration) {
                 svgElem.viewBox.baseVal.y += - dy;
             }
         });
+        svgElem.addEventListener("mouseleave", function (e) {
+            svgElem.style.cursor = "grab";
+            lastPosition = null;
+        });
     }
     
     function enableZooming(svgElem) {
         
         function calculateScale(delta) {
+            return Math.exp(- delta/100);
             var factor = Math.exp(-Math.abs(delta)/100);
             return Math.pow(factor, Math.sign(delta));
         }
