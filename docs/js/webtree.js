@@ -839,18 +839,23 @@ var WebTree = (function(){
         };
         var addons = Object.assign({},
             makeAddonSpecifiConfig("leaf_button", {
+                "fill": "#ffffff",
+                "stroke": "#000000",
+                "hovered_fill": "#ffffff",
+                "hovered_stroke": "#0000ff",
                 "shift": 4,
                 "width": 100,
                 "font_size": 20,
                 "vertical_padding": 5,
-                "show_border": true,
                 "auto_flip": false,
                 "get_label_by_name": null,
                 "onclick": null
             }),
             makeAddonSpecifiConfig("node_button", {
-                "fill": "lightblue",
-                "stroke": "blue",
+                "fill": "#ffffff",
+                "stroke": "#000000",
+                "hovered_fill": "#ffffff",
+                "hovered_stroke": "#0000ff",
                 "radius": 4,
                 "onclick": null
             })
@@ -916,14 +921,15 @@ var WebTree = (function(){
                             SvgHelper.setAttribute(elem, "font-size", fontSize);
                             SvgHelper.setAttribute(elem, "x", shift);
                             SvgHelper.setAttribute(elem, "style", "".concat([
-                                                    "cursor: default;",
-                                                    // disable selection
-                                                    " -webkit-touch-callout: none; -webkit-user-select: none;",
-                                                    "-khtml-user-select: none;",
-                                                    "-moz-user-select: none;",
-                                                    "-ms-user-select: none;",
-                                                    "user-select: none;"
-                                                ]));
+                                "pointer-events: none;",
+                                "cursor: default;",
+                                // disable selection
+                                " -webkit-touch-callout: none; -webkit-user-select: none;",
+                                "-khtml-user-select: none;",
+                                "-moz-user-select: none;",
+                                "-ms-user-select: none;",
+                                "user-select: none;"
+                            ]));
                             elem.appendChild(document.createTextNode(name));
                             return elem;
                         }
@@ -945,13 +951,15 @@ var WebTree = (function(){
                         
                         // handle clicking
                         if (onclickHandler != null) {
-                            elem.addEventListener("click", function (... args) { onclickHandler(node); });
+                            elem.addEventListener("click", function (... args) {
+                                onclickHandler(node);
+                            });
                         }
                         
                         // setup strok and fill
                         elem.style.fill = fill;
                         elem.style.stroke = stroke;
-                        elem.addEventListener("mouseenter", function (_) {
+                        elem.addEventListener("mouseover", function (_) {
                             elem.style.fill = hoveredFill;
                             elem.style.stroke = hoveredStroke;
                         })

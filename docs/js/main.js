@@ -135,6 +135,9 @@ function retrieveConfiguration() {
         delete c["enable-node-button"];
         delete c["enable-extend-branch"];
         delete c["enable-dragging"];
+        c["leaf_button::onclick"] = function (leaf) {
+            alert(leaf.name);
+        }
         return c;
     })();
     var addons = [];
