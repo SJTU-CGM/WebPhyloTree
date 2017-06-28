@@ -40,25 +40,31 @@ function displayTree(tolJson, configuration) {
                 y: y
             };
         });
+        
+        function resetDragging() {
+            svgElem.style.cursor = "grab";
+            lastPosition = null;
+        }
+        
         svgElem.addEventListener("mouseup", function(e) {
             if (lastPosition !== null) {
-                svgElem.style.cursor = "grab";
                 var x1 = e.layerX;
                 var y1 = e.layerY;
                 var x0 = lastPosition.x;
                 var y0 = lastPosition.y;
-                lastPosition = null;
                 var svgWidth =  svgElem.width.baseVal.value;
                 var svgHeight =  svgElem.height.baseVal.value;
                 var dx = (x1-x0) * viewBox.baseVal.width / svgWidth;
                 var dy = (y1-y0) * viewBox.baseVal.height / svgHeight;
                 svgElem.viewBox.baseVal.x += - dx;
                 svgElem.viewBox.baseVal.y += - dy;
+                resetDragging();
             }
         });
         svgElem.addEventListener("mouseleave", function (e) {
-            svgElem.style.cursor = "grab";
-            lastPosition = null;
+            if (lastPosition !== null) {
+                resetDragging();
+            }
         });
     }
     
