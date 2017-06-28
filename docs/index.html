@@ -28,7 +28,7 @@
     <form>
         <label for="layout-type">
             Layout Type
-            <select name="layout-type" id="layout-type">
+            <select name="layout-type">
                 <option value="rectangular">
                     Rectangular
                 </option>
@@ -43,64 +43,94 @@
         <br />
         <label>
             Unit Length of Branch
-            <input name="branch-unit" id="branch-unit" type="number" min="0" step="1" value="150" />
+            <input name="branch_length_unit" type="number" min="0" step="1" value="150" />
         </label>
         <br />
         <label for="enable-label">
             Enable Leaf Button
-            <input name="enable-label" id="enable-label" type="checkbox" checked="checked" />
+            <input name="enable-label" type="checkbox" checked="checked" />
         </label>
         <fieldset>
             <legend>Leaf Button</legend>
-            <label for="leaf_button::show_border">
-                Show Border
-                <input name="leaf_button::show_border" id="leaf_button::show_border" type="checkbox"/>
-            </label>
-            <br />
             <label for="leaf_button::auto_flip">
                 Auto Flip
-                <input name="leaf_button::auto_flip" id="leaf_button::auto_flip" type="checkbox"/>
+                <input name="leaf_button::auto_flip" type="checkbox"/>
             </label>
             <br />
             <label for="leaf_button::width">
                 Width
-                <input name="leaf_button::width" id="leaf_button::width" type="number" min="0" step="1" value="250" />
+                <input name="leaf_button::width" type="number" min="0" step="1" value="250" />
             </label>
             <br />
             <label for="leaf_button::font_size">
                 Font Size
-                <input name="leaf_button::font_size" id="leaf_button::font_size" type="number" min="0" step="1" value="10" />
+                <input name="leaf_button::font_size" type="number" min="0" step="1" value="10" />
             </label>
             <br />
             <label for="leaf_button::vertical_padding">
                 Vertical Padding
-                <input name="leaf_button::vertical_padding" id="leaf_button::vertical_padding" type="number" min="0" step="1" value="5" />
+                <input name="leaf_button::vertical_padding" type="number" min="0" step="1" value="5" />
+            </label>
+            <br />
+            <label>
+                Fill Color
+                <input type="color" name="leaf_button::fill" value="#ffffff" />
+            </label>
+            <br />
+            <label>
+                Border Color
+                <input type="color" name="leaf_button::stroke" value="#000000" />
+            </label>
+            <br />
+            <label>
+                Hovered Fill Color
+                <input type="color" name="leaf_button::hovered_fill" value="#ffffff" />
+            </label>
+            <br />
+            <label>
+                Hovered Border Color
+                <input type="color" name="leaf_button::hovered_stroke" value="#0000ff" />
             </label>
         </fieldset>
         <label for="enable-node-button">
             Enable Node Button
-            <input name="enable-node-button" id="enable-node-button" type="checkbox" />
+            <input name="enable-node-button" type="checkbox" />
         </label>
         <fieldset>
             <legend>Node Button</legend>
             <label for="node_button::radius">
                 Radius
-                <input name="node_button::radius" id="node_button::radius" type="number" min="0" step="1" value="5" />
+                <input name="node_button::radius" type="number" min="0" step="1" value="5" />
             </label>
             <br />
             <label>
                 Fill Color
-                <input type="color" name="node_button::fill" id="node_button::fill" value="#add8e6" />
+                <input type="color" name="node_button::fill" value="#ffffff" />
             </label>
             <br />
             <label>
                 Border Color
-                <input type="color" name="node_button::stroke" id="node_button::stroke" value="#0000ff" />
+                <input type="color" name="node_button::stroke" value="#000000" />
+            </label>
+            <br />
+            <label>
+                Hovered Fill Color
+                <input type="color" name="node_button::hovered_fill" value="#ffffff" />
+            </label>
+            <br />
+            <label>
+                Hovered Border Color
+                <input type="color" name="node_button::hovered_stroke" value="#0000ff" />
             </label>
         </fieldset>
         <label>
             Enable Extend Branch
-            <input name="enable-extend-branch" id="enable-extend-branch" type="checkbox" checked="true" />
+            <input name="enable-extend-branch" type="checkbox" checked="true" />
+        </label>
+        <br />
+        <label>
+            Enable Dragging
+            <input name="enable-dragging" type="checkbox" checked="true" />
         </label>
         <br />
         <input type="submit" value="Update Tree Display" id="update-display">

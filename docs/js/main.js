@@ -112,7 +112,7 @@ function displayTree(tolJson, configuration) {
     var tree = WebTree.load(layoutType, tolJson, layoutConfig, addons);
     var root = tree.root;
     var elem = tree.element;
-    enableDraging(elem);
+    // enableDraging(elem);
     enableZooming(elem);
     document.getElementById("tree-container").appendChild(elem);
 }
@@ -128,25 +128,15 @@ function retrieveConfiguration() {
     var formElem = document.getElementsByTagName("form")[0];
     var setting = FormInspector.inspect(formElem);
     var layoutType = setting["layout-type"];
-    var layoutConfig = {
-        "branch_length_unit": setting["branch-unit"],
-        "leaf_button::width": setting["leaf_button::width"],
-        "leaf_button::vertical_padding": setting["leaf_button::vertical_padding"],
-        "leaf_button::font_size": setting["leaf_button::font_size"],
-        "leaf_button::show_border": setting["leaf_button::show_border"],
-        "leaf_button::auto_flip": setting["leaf_button::auto_flip"],/*
-        "leaf_button::onclick": function (node) {
-            var elem = node.elements["leaf_button_button"];
-            if (elem.getAttributeNS(null, "fill") == "lightgrey") {
-                elem.setAttributeNS(null, "fill", "rgba(0,0,0,0)");
-            } else {
-                elem.setAttributeNS(null, "fill", "lightgrey");
-            }
-        },*/
-        "node_button::radius": setting["node_button::radius"],
-        "node_button::fill": setting["node_button::fill"],
-        "node_button::stroke": setting["node_button::stroke"]
-    }
+    var layoutConfig = (function(){
+        var c = Object.assign({}, setting);
+        delete c["layout-type"];
+        delete c["enable-label"];
+        delete c["enable-node-button"];
+        delete c["enable-extend-branch"];
+        delete c["enable-dragging"];
+        return c;
+    })();
     var addons = [];
     if (setting["enable-label"]) {
         addons.push(WebTree.Addons.LeafButton);
@@ -156,6 +146,9 @@ function retrieveConfiguration() {
     }
     if (setting["enable-extend-branch"]) {
         addons.push(WebTree.Addons.ExtendBranch);
+    }
+    if (setting["enable-dragging"]) {
+        addons.push(WebTree.Addons.Dragging);
     }
     displayLayoutParameter(layoutConfig);
     return {

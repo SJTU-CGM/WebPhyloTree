@@ -869,7 +869,7 @@ var WebTree = (function(){
     
     var Addons = {
         LeafButton: {
-            process: function (root) {
+            doAfterTree: function (root) {
                 
                 function autoFlip(root) {
                     function R(node, absRotation) {
@@ -891,6 +891,20 @@ var WebTree = (function(){
                     R(root, 0);
                 }
                 
+                var config = root.share.config;
+                var addonConfig = extractAddonSpecifiConfig(config, "leaf_button");
+                var fill = addonConfig["fill"];
+                var stroke = addonConfig["stroke"];
+                var hoveredFill = addonConfig["hovered_fill"];
+                var hoveredStroke = addonConfig["hovered_stroke"];
+                var shift = addonConfig["shift"];
+                var width = addonConfig["width"];
+                var fontSize = addonConfig["font_size"];
+                var getLabelByName = addonConfig["get_label_by_name"] || function(x) { return x; };
+                var buttonHeight = fontSize + 2 * addonConfig["vertical_padding"];
+                var buttonWidth = addonConfig["width"] - 2;      // leave space for border
+                var onclickHandler = addonConfig["onclick"];    // could be null!
+                
                 function P(node) {
                     
                     function addLabel(node) {
@@ -901,7 +915,15 @@ var WebTree = (function(){
                             SvgHelper.setAttribute(elem, "dominant-baseline", "central");
                             SvgHelper.setAttribute(elem, "font-size", fontSize);
                             SvgHelper.setAttribute(elem, "x", shift);
-                            SvgHelper.setAttribute(elem, "pointer-events", "none");
+                            SvgHelper.setAttribute(elem, "style", "".concat([
+                                                    "cursor: default;",
+                                                    // disable selection
+                                                    " -webkit-touch-callout: none; -webkit-user-select: none;",
+                                                    "-khtml-user-select: none;",
+                                                    "-moz-user-select: none;",
+                                                    "-ms-user-select: none;",
+                                                    "user-select: none;"
+                                                ]));
                             elem.appendChild(document.createTextNode(name));
                             return elem;
                         }
@@ -919,13 +941,25 @@ var WebTree = (function(){
                         SvgHelper.setAttribute(elem, "width", buttonWidth);
                         SvgHelper.setAttribute(elem, "height", buttonHeight);
                         SvgHelper.setAttribute(elem, "fill", "rgba(0,0,0,0)");
-                        SvgHelper.setAttribute(elem, "style", "cursor: initial;");
-                        if (! showBorder) {
-                            SvgHelper.setAttribute(elem, "stroke", "rgba(0,0,0,0");
-                        }
+                        SvgHelper.setAttribute(elem, "style", "cursor: default;");
+                        
+                        // handle clicking
                         if (onclickHandler != null) {
                             elem.addEventListener("click", function (... args) { onclickHandler(node); });
                         }
+                        
+                        // setup strok and fill
+                        elem.style.fill = fill;
+                        elem.style.stroke = stroke;
+                        elem.addEventListener("mouseenter", function (_) {
+                            elem.style.fill = hoveredFill;
+                            elem.style.stroke = hoveredStroke;
+                        })
+                        elem.addEventListener("mouseleave", function (_) {
+                            elem.style.fill = fill;
+                            elem.style.stroke = stroke;
+                        })
+                        
                         node.elements["hook"].appendChild(elem);
                         node.elements["leaf_button_button"] = elem;
                     }
@@ -942,17 +976,6 @@ var WebTree = (function(){
                     }
                 }
                 
-                var config = root.share.config;
-                var addonConfig = extractAddonSpecifiConfig(config, "leaf_button");
-                var shift = addonConfig["shift"];
-                var width = addonConfig["width"];
-                var fontSize = addonConfig["font_size"];
-                var getLabelByName = addonConfig["get_label_by_name"] || function(x) { return x; };
-                var showBorder = addonConfig["show_border"];
-                var buttonHeight = fontSize + 2 * addonConfig["vertical_padding"];
-                var buttonWidth = addonConfig["width"] - 2;      // leave space for border
-                var onclickHandler = addonConfig["onclick"];    // could be null!
-                
                 P(root);
 
                 if (((root.share.layoutEngine == Layout["circular"]) || (root.share.layoutEngine == Layout["unrooted"]))
@@ -963,23 +986,40 @@ var WebTree = (function(){
             }
         },
         NodeButton: {
-            process: function (root) {
+            doAfterTree: function (root) {
+                var config = root.share.config;
+                var addonConfig = extractAddonSpecifiConfig(config, "node_button");
+                var fill = addonConfig["fill"];
+                var stroke = addonConfig["stroke"];
+                var hoveredFill = addonConfig["hovered_fill"];
+                var hoveredStroke = addonConfig["hovered_stroke"];
+                var radius = addonConfig["radius"];
+                var onclickHandler = addonConfig["onclick"];
+                
                 
                 function P(node) {
-                    
                     function makeButton() {
                         var elem = SvgHelper.create("circle");
-                        SvgHelper.setAttribute(elem, "fill", fill);
-                        SvgHelper.setAttribute(elem, "stroke", stroke);
                         SvgHelper.setAttribute(elem, "cx", 0);
                         SvgHelper.setAttribute(elem, "cy", 0);
                         SvgHelper.setAttribute(elem, "r", radius);
                         SvgHelper.setAttribute(elem, "style", "cursor: initial;");
+                        elem.style.fill = fill;
+                        elem.style.stroke = stroke;
                         if (onclickHandler != null) {
                             elem.addEventListener("click", function (... args) { 
                                 onclickHandler(node); 
                             });
                         }
+                        // when hovered, change color
+                        elem.addEventListener("mouseenter", function (_) {
+                            elem.style.fill = hoveredFill;
+                            elem.style.stroke = hoveredStroke;
+                        })
+                        elem.addEventListener("mouseleave", function (_) {
+                            elem.style.fill = fill;
+                            elem.style.stroke = stroke;
+                        })
                         return elem;
                     }
                     
@@ -987,22 +1027,13 @@ var WebTree = (function(){
                         var elem = makeButton();
                         node.elements["hook"].appendChild(elem);
                         node.subnodes.map(P);
-                    } else {
-                        // do nothing
                     }
                 }
-                
-                var config = root.share.config;
-                var addonConfig = extractAddonSpecifiConfig(config, "node_button");
-                var fill = addonConfig["fill"];
-                var stroke = addonConfig["stroke"];
-                var radius = addonConfig["radius"];
-                var onclickHandler = addonConfig["onclick"];
                 P(root);
             }
         },
         ExtendBranch: {
-            process: function (root) {
+            doAfterTree: function (root) {
                 
                 function D(node) {
                     if (node.type == "node") {
@@ -1036,6 +1067,49 @@ var WebTree = (function(){
                 E(root, depth);
                 root.share.layoutEngine.updateTreePosition(root);
             }
+        },
+        Dragging: {
+            doAfterSvg: function (svgElem) {
+                svgElem.style.cursor = "grab";
+                var viewBox = svgElem.viewBox;
+                var lastPosition = null;
+                
+                svgElem.addEventListener("mousedown", function(e) {
+                    svgElem.style.cursor = "grabbing";
+                    var x = e.layerX;
+                    var y = e.layerY;
+                    lastPosition = {
+                        x: x,
+                        y: y
+                    };
+                });
+                
+                function resetDragging() {
+                    svgElem.style.cursor = "grab";
+                    lastPosition = null;
+                }
+                
+                svgElem.addEventListener("mouseup", function(e) {
+                    if (lastPosition !== null) {
+                        var x1 = e.layerX;
+                        var y1 = e.layerY;
+                        var x0 = lastPosition.x;
+                        var y0 = lastPosition.y;
+                        var svgWidth =  svgElem.width.baseVal.value;
+                        var svgHeight =  svgElem.height.baseVal.value;
+                        var dx = (x1-x0) * viewBox.baseVal.width / svgWidth;
+                        var dy = (y1-y0) * viewBox.baseVal.height / svgHeight;
+                        svgElem.viewBox.baseVal.x += - dx;
+                        svgElem.viewBox.baseVal.y += - dy;
+                        resetDragging();
+                    }
+                });
+                svgElem.addEventListener("mouseleave", function (e) {
+                    if (lastPosition !== null) {
+                        resetDragging();
+                    }
+                });
+            }
         }
     }
     
@@ -1058,7 +1132,7 @@ var WebTree = (function(){
             return load("unrooted", descr, config, addons);
         }
         
-        function load(layoutType, descr, rawConfig, addons) {
+        function load(layoutType, descr, rawConfig = {}, addons = []) {
             
             function makeConfig(layoutType, rawConfig) {
                 var baseConfig = Recipes[layoutType];
@@ -1093,11 +1167,11 @@ var WebTree = (function(){
             }
             
             function initializeLayout(root, layoutType, config) {
-                var LayoutEngine = Layout[layoutType];
                 root.share.config = config;
+                
+                var LayoutEngine = Layout[layoutType];
                 root.share.layoutEngine = LayoutEngine;
                 LayoutEngine.init(root);
-                
             }
             
             function makeSvg() {
@@ -1117,17 +1191,22 @@ var WebTree = (function(){
                 return svg;
             }
             
-            var rawConfig = rawConfig || {};
-            var addons = addons || [];
             var config = makeConfig(layoutType, rawConfig);
             var root = makeTree(descr);
             initializeElements(root);
             initializeLayout(root, layoutType, config);
             // trigger addons
             for (var addon of addons) {
-                addon.process(root);
+                if (addon.doAfterTree) {
+                    addon.doAfterTree(root);
+                }
             }
             var svg = makeSvg(root);
+            for (var addon of addons) {
+                if (addon.doAfterSvg) {
+                    addon.doAfterSvg(svg);
+                }
+            }
             return {
                 root: root,
                 element: svg
