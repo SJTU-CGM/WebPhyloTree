@@ -81,16 +81,6 @@
                 Border Color
                 <input type="color" name="leaf_button::stroke" value="#000000" />
             </label>
-            <br />
-            <label>
-                Hovered Fill Color
-                <input type="color" name="leaf_button::hovered_fill" value="#ffffff" />
-            </label>
-            <br />
-            <label>
-                Hovered Border Color
-                <input type="color" name="leaf_button::hovered_stroke" value="#0000ff" />
-            </label>
         </fieldset>
         <label for="enable-node-button">
             Enable Node Button
@@ -112,16 +102,6 @@
                 Border Color
                 <input type="color" name="node_button::stroke" value="#000000" />
             </label>
-            <br />
-            <label>
-                Hovered Fill Color
-                <input type="color" name="node_button::hovered_fill" value="#ffffff" />
-            </label>
-            <br />
-            <label>
-                Hovered Border Color
-                <input type="color" name="node_button::hovered_stroke" value="#0000ff" />
-            </label>
         </fieldset>
         <label>
             Enable Extend Branch
@@ -133,9 +113,15 @@
             <input name="enable-dragging" type="checkbox" checked="true" />
         </label>
         <br />
+        <label>
+            Enable Zooming
+            <input name="enable-zooming" type="checkbox" checked="true" />
+        </label>
+        <br />
         <input type="submit" value="Update Tree Display" id="update-display-button">
     </form>
     <button id="download-svg-button">Download tree image as SVG</button>
+    <button id="make-subtree-button">Construct sub-tree from selected leaves.</button>
     <div id="tree-container"></div>
     <script src="./js/main.js" type="text/javascript"></script>
 </body>
