@@ -44,39 +44,41 @@ function initTree(treeJson, containerElement) {
                     leaf.setStroke("black");
                 }
                 c["leaf_button::onclick"] = function (leaf) {
-                    if (! selectedLeafSet.has(leaf))
-                    {
-                        selectLeaf(leaf);
-                    }
-                    else
-                    {
-                        unselectLeaf(leaf);
-                    }
+                    alert("You clicked a leaf!");
+                    // if (! selectedLeafSet.has(leaf))
+                    // {
+                    //     selectLeaf(leaf);
+                    // }
+                    // else
+                    // {
+                    //     unselectLeaf(leaf);
+                    // }
                 }
                 c["node_button::onclick"] = function (node) {
-                    var descendants = node.getDescendants();
-                    for (var d of descendants)
-                    {
-                        selectLeaf(d);
-                    }
+                    alert("You clicked a node!");
+                    // var descendants = node.getDescendants();
+                    // for (var d of descendants)
+                    // {
+                    //     selectLeaf(d);
+                    // }
                 }
                 return c;
             })();
             var addons = [];
             if (setting["enable-label"]) {
-                addons.push(WebTree.Addons.LeafButton);
+                addons.push(WebPhyloTree.Addons.LeafButton);
             }
             if (setting["enable-node-button"]) {
-                addons.push(WebTree.Addons.NodeButton);
+                addons.push(WebPhyloTree.Addons.NodeButton);
             }
             if (setting["enable-extend-branch"]) {
-                addons.push(WebTree.Addons.ExtendBranch);
+                addons.push(WebPhyloTree.Addons.ExtendBranch);
             }
             if (setting["enable-dragging"]) {
-                addons.push(WebTree.Addons.Dragging);
+                addons.push(WebPhyloTree.Addons.Dragging);
             }
             if (setting["enable-zooming"]) {
-                addons.push(WebTree.Addons.Zooming);
+                addons.push(WebPhyloTree.Addons.Zooming);
             }
             displayLayoutParameter(layoutConfig);
             return {
@@ -89,7 +91,7 @@ function initTree(treeJson, containerElement) {
             var layoutType = configuration.layoutType;
             var layoutConfig = configuration.layoutConfig;
             var addons = configuration.addons;
-            var tree = WebTree.load(layoutType, treeJson, layoutConfig, addons);
+            var tree = WebPhyloTree.load(layoutType, treeJson, layoutConfig, addons);
             
             return tree;
         }
@@ -126,7 +128,7 @@ function initTree(treeJson, containerElement) {
         
         document.getElementById("make-subtree-button").addEventListener("click", function (e) {
             console.log("selectedLeafSet", selectedLeafSet);
-            var descr = WebTree.Utility.getSubTreeDescriptionByLeaves(Array.from(selectedLeafSet));
+            var descr = WebPhyloTree.Utility.getSubTreeDescriptionByLeaves(Array.from(selectedLeafSet));
             selectedLeafSet = new Set();
             treeJson = descr;
             console.log(treeJson);

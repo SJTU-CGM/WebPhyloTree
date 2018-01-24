@@ -1,4 +1,4 @@
-var WebTree = (function(){
+var WebPhyloTree = (function(){
     
     
     var SvgHelper = (function(){
@@ -956,11 +956,11 @@ var WebTree = (function(){
                         // add button before adding label, so that buttonElem will lay below labelElem
                         var buttonElem = makeButton();
                         node.elements["hook"].appendChild(buttonElem);
-                        node.elements["leaf_button_button"] = buttonElem;
+                        node.elements["leaf_button::button"] = buttonElem;
                         
                         var labelElem = makeLabel(node.name);
                         node.elements["hook"].appendChild(labelElem);
-                        node.elements["leaf_button_label"] = labelElem;
+                        node.elements["leaf_button::label"] = labelElem;
                         
                         // so that the tree is positioned properly
                         node.layout["body_width"] += width;
@@ -1014,9 +1014,15 @@ var WebTree = (function(){
                     }
                     
                     if (isNode(node)) {
-                        var elem = makeButton();
+                        let elem = makeButton();
                         node.elements["hook"].appendChild(elem);
                         node.subnodes.map(P);
+                        node.setButtonFill = function(fill) {
+                            elem.style.fill = fill;
+                        }
+                        node.setButtonStroke = function(stroke) {
+                            elem.style.stroke = stroke;
+                        }
                     }
                 }
                 P(root);
@@ -1060,45 +1066,91 @@ var WebTree = (function(){
         },
         Dragging: {
             doAfterSvg: function (svgElem) {
-                svgElem.style.cursor = "grab";
-                var viewBox = svgElem.viewBox;
-                var lastPosition = null;
-                
-                svgElem.addEventListener("mousedown", function(e) {
-                    svgElem.style.cursor = "grabbing";
-                    var x = e.layerX;
-                    var y = e.layerY;
-                    lastPosition = {
-                        x: x,
-                        y: y
-                    };
-                });
-                
-                function resetDragging() {
-                    svgElem.style.cursor = "grab";
-                    lastPosition = null;
+                let dragging = false;
+                let baseX, baseY;
+                let X, Y;
+                function startDragging(cursorX, cursorY) {
+                    X = svgElem.viewBox.baseVal.x + (cursorX * svgElem.viewBox.baseVal.width / svgElem.width.baseVal.value);
+                    Y = svgElem.viewBox.baseVal.y + (cursorY * svgElem.viewBox.baseVal.height / svgElem.height.baseVal.value);
+                    baseX = svgElem.viewBox.baseVal.x;
+                    baseY = svgElem.viewBox.baseVal.y;
+                    dragging = true;
                 }
+                function updateDragging(cursorX, cursorY) {
+                    svgElem.viewBox.baseVal.x = X - (cursorX * svgElem.viewBox.baseVal.width / svgElem.width.baseVal.value);
+                    svgElem.viewBox.baseVal.y = Y - (cursorY * svgElem.viewBox.baseVal.height / svgElem.height.baseVal.value);
+                }
+                function stopDragging(x, y) {
+                    updateDragging(x, y);
+                    dragging = false;
+                }
+                function breakDragging() {
+                    svgElem.viewBox.baseVal.x = baseX;
+                    svgElem.viewBox.baseVal.y = baseY;
+                    dragging = false;
+                }
+                svgElem.addEventListener("mousedown", function(e){
+                    if (! dragging) {
+                        startDragging(e.layerX, e.layerY);
+                    }
+                });
+                svgElem.addEventListener("mousemove", function(e){
+                    if (dragging) 
+                    {
+                        updateDragging(e.layerX, e.layerY);
+                    }
+                });
+                svgElem.addEventListener("mouseup", function(e){
+                    if (dragging) {
+                        stopDragging(e.layerX, e.layerY);
+                    }
+                });
+                svgElem.addEventListener("mouseleave", function(e){
+                    if (dragging) {
+                        breakDragging();
+                    }
+                });
+
+
+                // svgElem.style.cursor = "grab";
+                // var viewBox = svgElem.viewBox;
+                // var lastPosition = null;
                 
-                svgElem.addEventListener("mouseup", function(e) {
-                    if (lastPosition !== null) {
-                        var x1 = e.layerX;
-                        var y1 = e.layerY;
-                        var x0 = lastPosition.x;
-                        var y0 = lastPosition.y;
-                        var svgWidth =  svgElem.width.baseVal.value;
-                        var svgHeight =  svgElem.height.baseVal.value;
-                        var dx = (x1-x0) * viewBox.baseVal.width / svgWidth;
-                        var dy = (y1-y0) * viewBox.baseVal.height / svgHeight;
-                        svgElem.viewBox.baseVal.x += - dx;
-                        svgElem.viewBox.baseVal.y += - dy;
-                        resetDragging();
-                    }
-                });
-                svgElem.addEventListener("mouseleave", function (e) {
-                    if (lastPosition !== null) {
-                        resetDragging();
-                    }
-                });
+                // svgElem.addEventListener("mousedown", function(e) {
+                //     svgElem.style.cursor = "grabbing";
+                //     var x = e.layerX;
+                //     var y = e.layerY;
+                //     lastPosition = {
+                //         x: x,
+                //         y: y
+                //     };
+                // });
+                
+                // function resetDragging() {
+                //     svgElem.style.cursor = "grab";
+                //     lastPosition = null;
+                // }
+                
+                // svgElem.addEventListener("mouseup", function(e) {
+                //     if (lastPosition !== null) {
+                //         var x1 = e.layerX;
+                //         var y1 = e.layerY;
+                //         var x0 = lastPosition.x;
+                //         var y0 = lastPosition.y;
+                //         var svgWidth =  svgElem.width.baseVal.value;
+                //         var svgHeight =  svgElem.height.baseVal.value;
+                //         var dx = (x1-x0) * viewBox.baseVal.width / svgWidth;
+                //         var dy = (y1-y0) * viewBox.baseVal.height / svgHeight;
+                //         svgElem.viewBox.baseVal.x += - dx;
+                //         svgElem.viewBox.baseVal.y += - dy;
+                //         resetDragging();
+                //     }
+                // });
+                // svgElem.addEventListener("mouseleave", function (e) {
+                //     if (lastPosition !== null) {
+                //         resetDragging();
+                //     }
+                // });
             }
         },
         Zooming: {
@@ -1106,11 +1158,8 @@ var WebTree = (function(){
                 function calculateScale(delta) {
                     return Math.exp(- delta/100);
                 }
-                
-                svgElem.addEventListener("wheel", function(e) {
-                    e.preventDefault();            
-                    var scale = calculateScale(e.deltaY);
-                    
+
+                function zoom(scale, mx, my) {
                     var x0 = svgElem.viewBox.baseVal.x;
                     var y0 = svgElem.viewBox.baseVal.y;
                     var w0 = svgElem.viewBox.baseVal.width;
@@ -1120,11 +1169,11 @@ var WebTree = (function(){
                     var sw = svgElem.width.baseVal.value;
                     var sh = svgElem.height.baseVal.value;
                     /* mouse x/y */
-                    var mx = e.layerX;
-                    var my = e.layerY;
                     
                     var w1 = w0 * scale;
                     var h1 = h0 * scale;
+
+                    /* x0 + (mx * w0 / sw) = x1 + (mx * w1 / sw) */
                     var x1 = (mx * w0 / sw) + x0 - (mx * w1 / sw);
                     var y1 = (my * h0 / sh) + y0 - (my * h1 / sh);
                     
@@ -1132,6 +1181,11 @@ var WebTree = (function(){
                     svgElem.viewBox.baseVal.y = y1;
                     svgElem.viewBox.baseVal.width = w1;
                     svgElem.viewBox.baseVal.height = h1;
+                }
+                
+                svgElem.addEventListener("wheel", function(e) {
+                    e.preventDefault();
+                    zoom(calculateScale(e.deltaY), e.layerX, e.layerY);
                 }, {
                     capture: true
                 });

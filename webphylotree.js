@@ -1,4 +1,4 @@
-var WebTree = (function(){
+var WebPhyloTree = (function(){
     
     
     var SvgHelper = (function(){
@@ -163,19 +163,6 @@ var WebTree = (function(){
     
     
     
-    function appendNode(n1, n2) {
-        if (isNode(n1)) {
-            n1.subnodes.push(n2);
-            n2.parent = n1;
-        } else {
-            throw new WebTreeError("appendNode", "Parent node is not a node.", n1, n2);
-        }
-        
-    }
-    
-    
-    
-    
     // Node constructor & Leaf constructor
     
     function GeneralNode(name, length, share) {
@@ -190,12 +177,26 @@ var WebTree = (function(){
         GeneralNode.apply(this, [name, length, share]);
         this.subnodes = [];
         this.type = "node";
+        this.addSubNode = function (child) {
+            this.subnodes.push(child);
+            child.parent = this;
+        }
+        this.getDescendants = function () {
+            var d = [];
+            for (var c of this.subnodes) {
+                d = d.concat(c.getDescendants());
+            }
+            return d;
+        }
     }
     
     
     function Leaf(name, length, share) {
         GeneralNode.apply(this, [name, length, share]);
         this.type = "leaf";
+        this.getDescendants = function () {
+            return [this];
+        }
     }
     
     
@@ -841,8 +842,6 @@ var WebTree = (function(){
             makeAddonSpecifiConfig("leaf_button", {
                 "fill": "#ffffff",
                 "stroke": "#000000",
-                "hovered_fill": "#ffffff",
-                "hovered_stroke": "#0000ff",
                 "shift": 4,
                 "width": 100,
                 "font_size": 20,
@@ -854,8 +853,6 @@ var WebTree = (function(){
             makeAddonSpecifiConfig("node_button", {
                 "fill": "#ffffff",
                 "stroke": "#000000",
-                "hovered_fill": "#ffffff",
-                "hovered_stroke": "#0000ff",
                 "radius": 4,
                 "onclick": null
             })
@@ -886,7 +883,7 @@ var WebTree = (function(){
                         } else {
                             var degree = absRotation + node.layout["joint"];
                             if (degree > 90 && degree < 270) {
-                                var elem = node.elements["leaf_button"];
+                                var elem = node.elements["leaf_button_label"];
                                 SvgHelper.setAttribute(elem, "text-anchor", "end");
                                 SvgHelper.setAttribute(elem, "transform", "rotate(180)");
                                 SvgHelper.setAttribute(elem, "x", - shift);
@@ -898,10 +895,6 @@ var WebTree = (function(){
                 
                 var config = root.share.config;
                 var addonConfig = extractAddonSpecifiConfig(config, "leaf_button");
-                var fill = addonConfig["fill"];
-                var stroke = addonConfig["stroke"];
-                var hoveredFill = addonConfig["hovered_fill"];
-                var hoveredStroke = addonConfig["hovered_stroke"];
                 var shift = addonConfig["shift"];
                 var width = addonConfig["width"];
                 var fontSize = addonConfig["font_size"];
@@ -911,9 +904,35 @@ var WebTree = (function(){
                 var onclickHandler = addonConfig["onclick"];    // could be null!
                 
                 function P(node) {
-                    
-                    function addLabel(node) {
-                    
+                    if (node.type == "node") {
+                        for (var snode of node.subnodes) {
+                            P(snode);
+                        }
+                    } else {
+                        var fill = addonConfig["fill"];
+                        var stroke = addonConfig["stroke"];
+                        
+                        function makeButton() {
+                            var elem = SvgHelper.create("rect");
+                            SvgHelper.setAttribute(elem, "x", 0);
+                            SvgHelper.setAttribute(elem, "y", - buttonHeight/2);
+                            SvgHelper.setAttribute(elem, "width", buttonWidth);
+                            SvgHelper.setAttribute(elem, "height", buttonHeight);
+                            SvgHelper.setAttribute(elem, "fill", "rgba(0,0,0,0)");
+                            SvgHelper.setAttribute(elem, "style", "cursor: default;");
+                            
+                            // handle clicking
+                            if (onclickHandler != null) {
+                                elem.addEventListener("click", function (... args) {
+                                    onclickHandler(node);
+                                });
+                            }
+                            
+                            // setup strok and fill
+                            elem.style.fill = fill;
+                            elem.style.stroke = stroke;
+                            return elem;
+                        }
                         function makeLabel(name) {
                             var elem = SvgHelper.create("text");
                             var labelText = getLabelByName
@@ -923,7 +942,7 @@ var WebTree = (function(){
                             SvgHelper.setAttribute(elem, "style", "".concat([
                                 "pointer-events: none;",
                                 "cursor: default;",
-                                // disable selection
+                                // disable selecting
                                 " -webkit-touch-callout: none; -webkit-user-select: none;",
                                 "-khtml-user-select: none;",
                                 "-moz-user-select: none;",
@@ -934,58 +953,32 @@ var WebTree = (function(){
                             return elem;
                         }
                         
-                        var name = node.name;
-                        var elem = makeLabel(name);
-                        node.elements["hook"].appendChild(elem);
-                        node.elements["leaf_button"] = elem;
-                    }
-                    
-                    function addButton(node) {
-                        var elem = SvgHelper.create("rect");
-                        SvgHelper.setAttribute(elem, "x", 0);
-                        SvgHelper.setAttribute(elem, "y", - buttonHeight/2);
-                        SvgHelper.setAttribute(elem, "width", buttonWidth);
-                        SvgHelper.setAttribute(elem, "height", buttonHeight);
-                        SvgHelper.setAttribute(elem, "fill", "rgba(0,0,0,0)");
-                        SvgHelper.setAttribute(elem, "style", "cursor: default;");
+                        // add button before adding label, so that buttonElem will lay below labelElem
+                        var buttonElem = makeButton();
+                        node.elements["hook"].appendChild(buttonElem);
+                        node.elements["leaf_button::button"] = buttonElem;
                         
-                        // handle clicking
-                        if (onclickHandler != null) {
-                            elem.addEventListener("click", function (... args) {
-                                onclickHandler(node);
-                            });
-                        }
+                        var labelElem = makeLabel(node.name);
+                        node.elements["hook"].appendChild(labelElem);
+                        node.elements["leaf_button::label"] = labelElem;
                         
-                        // setup strok and fill
-                        elem.style.fill = fill;
-                        elem.style.stroke = stroke;
-                        elem.addEventListener("mouseover", function (_) {
-                            elem.style.fill = hoveredFill;
-                            elem.style.stroke = hoveredStroke;
-                        })
-                        elem.addEventListener("mouseleave", function (_) {
-                            elem.style.fill = fill;
-                            elem.style.stroke = stroke;
-                        })
-                        
-                        node.elements["hook"].appendChild(elem);
-                        node.elements["leaf_button_button"] = elem;
-                    }
-                    
-                    if (node.type == "node") {
-                        for (var snode of node.subnodes) {
-                            P(snode);
-                        }
-                    } else {
-                        addButton(node);
-                        addLabel(node);
                         // so that the tree is positioned properly
                         node.layout["body_width"] += width;
+                        
+                        node.setFill = function (color) {
+                            fill = color;
+                            buttonElem.style.fill = color;
+                        }
+                        node.setStroke = function (color) {
+                            stroke = color;
+                            buttonElem.style.stroke = color;
+                        }
                     }
                 }
                 
                 P(root);
 
+                // only flip the leaves when using circular or unrooted layout.
                 if (((root.share.layoutEngine == Layout["circular"]) || (root.share.layoutEngine == Layout["unrooted"]))
                     && addonConfig["auto_flip"]) {
                     autoFlip(root);
@@ -999,8 +992,6 @@ var WebTree = (function(){
                 var addonConfig = extractAddonSpecifiConfig(config, "node_button");
                 var fill = addonConfig["fill"];
                 var stroke = addonConfig["stroke"];
-                var hoveredFill = addonConfig["hovered_fill"];
-                var hoveredStroke = addonConfig["hovered_stroke"];
                 var radius = addonConfig["radius"];
                 var onclickHandler = addonConfig["onclick"];
                 
@@ -1019,22 +1010,19 @@ var WebTree = (function(){
                                 onclickHandler(node); 
                             });
                         }
-                        // when hovered, change color
-                        elem.addEventListener("mouseenter", function (_) {
-                            elem.style.fill = hoveredFill;
-                            elem.style.stroke = hoveredStroke;
-                        })
-                        elem.addEventListener("mouseleave", function (_) {
-                            elem.style.fill = fill;
-                            elem.style.stroke = stroke;
-                        })
                         return elem;
                     }
                     
                     if (isNode(node)) {
-                        var elem = makeButton();
+                        let elem = makeButton();
                         node.elements["hook"].appendChild(elem);
                         node.subnodes.map(P);
+                        node.setButtonFill = function(fill) {
+                            elem.style.fill = fill;
+                        }
+                        node.setButtonStroke = function(stroke) {
+                            elem.style.stroke = stroke;
+                        }
                     }
                 }
                 P(root);
@@ -1078,45 +1066,196 @@ var WebTree = (function(){
         },
         Dragging: {
             doAfterSvg: function (svgElem) {
-                svgElem.style.cursor = "grab";
-                var viewBox = svgElem.viewBox;
-                var lastPosition = null;
-                
-                svgElem.addEventListener("mousedown", function(e) {
-                    svgElem.style.cursor = "grabbing";
-                    var x = e.layerX;
-                    var y = e.layerY;
-                    lastPosition = {
-                        x: x,
-                        y: y
-                    };
+                let dragging = false;
+                let baseX, baseY;
+                let X, Y;
+                function startDragging(cursorX, cursorY) {
+                    X = svgElem.viewBox.baseVal.x + (cursorX * svgElem.viewBox.baseVal.width / svgElem.width.baseVal.value);
+                    Y = svgElem.viewBox.baseVal.y + (cursorY * svgElem.viewBox.baseVal.height / svgElem.height.baseVal.value);
+                    baseX = svgElem.viewBox.baseVal.x;
+                    baseY = svgElem.viewBox.baseVal.y;
+                    dragging = true;
+                }
+                function updateDragging(cursorX, cursorY) {
+                    svgElem.viewBox.baseVal.x = X - (cursorX * svgElem.viewBox.baseVal.width / svgElem.width.baseVal.value);
+                    svgElem.viewBox.baseVal.y = Y - (cursorY * svgElem.viewBox.baseVal.height / svgElem.height.baseVal.value);
+                }
+                function stopDragging(x, y) {
+                    updateDragging(x, y);
+                    dragging = false;
+                }
+                function breakDragging() {
+                    svgElem.viewBox.baseVal.x = baseX;
+                    svgElem.viewBox.baseVal.y = baseY;
+                    dragging = false;
+                }
+                svgElem.addEventListener("mousedown", function(e){
+                    if (! dragging) {
+                        startDragging(e.layerX, e.layerY);
+                    }
                 });
+                svgElem.addEventListener("mousemove", function(e){
+                    if (dragging) 
+                    {
+                        updateDragging(e.layerX, e.layerY);
+                    }
+                });
+                svgElem.addEventListener("mouseup", function(e){
+                    if (dragging) {
+                        stopDragging(e.layerX, e.layerY);
+                    }
+                });
+                svgElem.addEventListener("mouseleave", function(e){
+                    if (dragging) {
+                        breakDragging();
+                    }
+                });
+
+
+                // svgElem.style.cursor = "grab";
+                // var viewBox = svgElem.viewBox;
+                // var lastPosition = null;
                 
-                function resetDragging() {
-                    svgElem.style.cursor = "grab";
-                    lastPosition = null;
+                // svgElem.addEventListener("mousedown", function(e) {
+                //     svgElem.style.cursor = "grabbing";
+                //     var x = e.layerX;
+                //     var y = e.layerY;
+                //     lastPosition = {
+                //         x: x,
+                //         y: y
+                //     };
+                // });
+                
+                // function resetDragging() {
+                //     svgElem.style.cursor = "grab";
+                //     lastPosition = null;
+                // }
+                
+                // svgElem.addEventListener("mouseup", function(e) {
+                //     if (lastPosition !== null) {
+                //         var x1 = e.layerX;
+                //         var y1 = e.layerY;
+                //         var x0 = lastPosition.x;
+                //         var y0 = lastPosition.y;
+                //         var svgWidth =  svgElem.width.baseVal.value;
+                //         var svgHeight =  svgElem.height.baseVal.value;
+                //         var dx = (x1-x0) * viewBox.baseVal.width / svgWidth;
+                //         var dy = (y1-y0) * viewBox.baseVal.height / svgHeight;
+                //         svgElem.viewBox.baseVal.x += - dx;
+                //         svgElem.viewBox.baseVal.y += - dy;
+                //         resetDragging();
+                //     }
+                // });
+                // svgElem.addEventListener("mouseleave", function (e) {
+                //     if (lastPosition !== null) {
+                //         resetDragging();
+                //     }
+                // });
+            }
+        },
+        Zooming: {
+            doAfterSvg: function (svgElem) {
+                function calculateScale(delta) {
+                    return Math.exp(- delta/100);
+                }
+
+                function zoom(scale, mx, my) {
+                    var x0 = svgElem.viewBox.baseVal.x;
+                    var y0 = svgElem.viewBox.baseVal.y;
+                    var w0 = svgElem.viewBox.baseVal.width;
+                    var h0 = svgElem.viewBox.baseVal.height;
+                    
+                    /* svg width/height */
+                    var sw = svgElem.width.baseVal.value;
+                    var sh = svgElem.height.baseVal.value;
+                    /* mouse x/y */
+                    
+                    var w1 = w0 * scale;
+                    var h1 = h0 * scale;
+
+                    /* x0 + (mx * w0 / sw) = x1 + (mx * w1 / sw) */
+                    var x1 = (mx * w0 / sw) + x0 - (mx * w1 / sw);
+                    var y1 = (my * h0 / sh) + y0 - (my * h1 / sh);
+                    
+                    svgElem.viewBox.baseVal.x = x1;
+                    svgElem.viewBox.baseVal.y = y1;
+                    svgElem.viewBox.baseVal.width = w1;
+                    svgElem.viewBox.baseVal.height = h1;
                 }
                 
-                svgElem.addEventListener("mouseup", function(e) {
-                    if (lastPosition !== null) {
-                        var x1 = e.layerX;
-                        var y1 = e.layerY;
-                        var x0 = lastPosition.x;
-                        var y0 = lastPosition.y;
-                        var svgWidth =  svgElem.width.baseVal.value;
-                        var svgHeight =  svgElem.height.baseVal.value;
-                        var dx = (x1-x0) * viewBox.baseVal.width / svgWidth;
-                        var dy = (y1-y0) * viewBox.baseVal.height / svgHeight;
-                        svgElem.viewBox.baseVal.x += - dx;
-                        svgElem.viewBox.baseVal.y += - dy;
-                        resetDragging();
-                    }
+                svgElem.addEventListener("wheel", function(e) {
+                    e.preventDefault();
+                    zoom(calculateScale(e.deltaY), e.layerX, e.layerY);
+                }, {
+                    capture: true
                 });
-                svgElem.addEventListener("mouseleave", function (e) {
-                    if (lastPosition !== null) {
-                        resetDragging();
+            }
+        }
+    }
+    
+    
+    
+    
+    // @Utilities
+    var Utility = {
+        getSubTreeDescriptionByLeaves: function (leafArray) {
+            if (leafArray.length === 0)
+            {
+                return null;
+            }
+            else
+            {
+                let theMap = new Map();
+                let root;
+                let node = leafArray[0];
+                do {
+                    theMap.set(node.parent, [node]);
+                    node = node.parent;
+                } while (node.parent !== null); // node is not the root.
+                root = node;
+                for (let i = 1; i < leafArray.length; i ++)
+                {
+                    let node = leafArray[i];
+                    while (! theMap.has(node.parent))
+                    {
+                        theMap.set(node.parent, [node]);
+                        
+                        node = node.parent;
                     }
-                });
+                    (theMap.get(node.parent)).push(node);
+                }
+                
+                function condense(node, prefixLength)
+                {
+                    if (theMap.has(node))
+                    {
+                        let childArray = theMap.get(node);
+                        if (childArray.length === 1)
+                        {
+                            return condense(childArray[0], prefixLength + node.length);
+                        }
+                        else
+                        {
+                            let descr = {};
+                            descr.name = node.name;
+                            descr.length = prefixLength + node.length;
+                            descr.subnodes = [];
+                            for (let c of childArray)
+                            {
+                                descr.subnodes.push(condense(c, 0));
+                            }
+                            return descr;
+                        }
+                    }
+                    else
+                    {
+                        let descr = {};
+                        descr.name = node.name;
+                        descr.length = prefixLength + node.length;
+                        return descr;
+                    }
+                }
+                return condense(root, 0);
             }
         }
     }
@@ -1150,7 +1289,10 @@ var WebTree = (function(){
             
             function makeTree(descr) {
                 
-                var share = {}
+                // `share` is an object shared by all nodes and leaves. 
+                var share = {
+                    nodeByName: {}
+                };
                 
                 function M(descr) {
                     var name = descr["name"];
@@ -1158,12 +1300,15 @@ var WebTree = (function(){
                     if (descr.hasOwnProperty("subnodes")) {
                         // is a node
                         var node = new Node(name, length, share);
+                        share.nodeByName[name] = node;
                         for (var d of descr["subnodes"]) {
-                            appendNode(node, M(d));
+                            node.addSubNode(M(d));
                         }
                         return node;
                     } else {
-                        return new Leaf(name, length, share);
+                        var node = new Leaf(name, length, share);
+                        share.nodeByName[name] = node;
+                        return node;
                     }
                 }
                 
@@ -1224,6 +1369,7 @@ var WebTree = (function(){
         
         return {
             Addons: Addons,
+            Utility: Utility,
             rectangular: rectangular,
             circular: circular,
             unrooted: unrooted,

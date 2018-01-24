@@ -1,9 +1,0 @@
-(body
- (hgroup
-  (h1 "WebTree")
-  (h3 "A JavaScript library that helps visualizing tree in HTML and SVG document"))
- (h2 "Links")
- (ul
-  (li "GitHub")
-  (li "Wiki (document)"))
- (h2 "Try it now!"))

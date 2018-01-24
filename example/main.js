@@ -28,11 +28,11 @@ var description = {
 
 
 /* Using addons */
-var tree = WebTree.load("rectangular", description, {
+var tree = WebPhyloTree.load("rectangular", description, {
         "branch_length_unit": 10,
         "leaf_span": 50,
     },
-    [ WebTree.Addons.LeafLabel, WebTree.Addons.ExtendBranch ]
+    [ WebPhyloTree.Addons.LeafButton, WebPhyloTree.Addons.ExtendBranch ]
 );
 
 

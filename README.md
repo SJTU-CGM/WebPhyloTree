@@ -1,6 +1,6 @@
-# WebTree
+# WebPhyloTree
 
-WebTree is a JavaScript library which helps visualizing tree in HTML and SVG document. The primary function of WebTree is to  translate a description of tree into a DOM tree of SVG elements (or, the display of the tree). Users can customize the display by setting layout parameters or enabling addons. The tree can be either static or interactive, depending on enabled addons.
+WebPhyloTree is a JavaScript library which helps visualizing tree in HTML and SVG document. The primary function of WebPhyloTree is to  translate a description of tree into a DOM tree of SVG elements (or, the display of the tree). Users can customize the display by setting layout parameters or enabling addons. The tree can be either static or interactive, depending on enabled addons.
 
 
 
@@ -22,7 +22,7 @@ This section illustrates visualizing tree in HTML document. The source code are 
 
 ### Tree Description
 
-The tree to be visualized should be described as a JavaScript object (see [Specification of Tree Description](https://github.com/KelvinLu1024/WebTree/wiki/Specification-of-Tree-Description)), for example:
+The tree to be visualized should be described as a JavaScript object (see [Specification of Tree Description](https://github.com/SJTU-CGM/WebPhyloTree/wiki/Specification-of-Tree-Description)), for example:
 
 ```javascript
 var description = {
@@ -46,27 +46,27 @@ var description = {
 The most simple way to construct a tree looks like this. `"rectangular"` can be replaced with `"circular"` or `"unrooted"` to use the other types of layout. 
 
 ```javascript
-var tree = WebTree.load("rectangular", description);
+var tree = WebPhyloTree.load("rectangular", description);
 ```
 
-Users can customize the layout of tree by defining some layout parameters. (see [list of layout parameters and their meanings](https://github.com/KelvinLu1024/WebTree/wiki/List-of-Layout-Parameters)). 
+Users can customize the layout of tree by defining some layout parameters. (see [list of layout parameters and their meanings](https://github.com/SJTU-CGM/WebPhyloTree/wiki/List-of-Layout-Parameters)). 
 
 ```javascript
-var tree = WebTree.load("rectangular", description, {
+var tree = WebPhyloTree.load("rectangular", description, {
         "branch_length_unit": 10,
         "leaf_span": 50,
     }
 );
 ```
 
-WebTree is shipped with several addons, users can enable them during tree construction. (see [list of addons and their meanings](https://github.com/KelvinLu1024/WebTree/wiki/List-of-Addons)). 
+WebPhyloTree is shipped with several addons, users can enable them during tree construction. (see [list of addons and their meanings](https://github.com/SJTU-CGM/WebPhyloTree/wiki/List-of-Addons)). 
 
 ```javascript
-var tree = WebTree.load("rectangular", description, {
+var tree = WebPhyloTree.load("rectangular", description, {
         "branch_length_unit": 10,
         "leaf_span": 50,
     },
-    [ WebTree.Addons.LeafLabel, WebTree.Addons.ExtendBranch ]
+    [ WebPhyloTree.Addons.LeafButtom, WebPhyloTree.Addons.ExtendBranch ]
 );
 ```
 
@@ -87,11 +87,11 @@ document.getElementsByTagName("body")[0].appendChild(tree.element);
 
 ### Shortcuts
 
-Sometimes, it is desirable to construct many trees in the same layout. So WebTree provides three more tree constructor: `WebTree.rectangular`, `WebTree.circular` and `WebTree.unrooted`. Their usages are almost the same as `WebTree.load`, except that they ommits the first parameter. In a nut shell, `WebTree.rectangular(...)` is equivalent to `WebTree.load("rectangular", ...)`. 
+Sometimes, it is desirable to construct many trees in the same layout. So WebPhyloTree provides three more tree constructor: `WebPhyloTree.rectangular`, `WebPhyloTree.circular` and `WebPhyloTree.unrooted`. Their usages are almost the same as `WebPhyloTree.load`, except that they ommits the first parameter. In a nut shell, `WebPhyloTree.rectangular(...)` is equivalent to `WebPhyloTree.load("rectangular", ...)`. 
 
 
 
 
 ## See also
 
-As WebTree takes JSON as input, you may need [a parser for Newick](https://github.com/KelvinLu1024/newick.js) or [a parser for PhyloXML](https://github.com/KelvinLu1024/phyloxml.js).
+As WebPhyloTree takes JSON as input, you may need [a parser for Newick](https://github.com/KelvinLu1024/newick.js) or [a parser for PhyloXML](https://github.com/KelvinLu1024/phyloxml.js).
